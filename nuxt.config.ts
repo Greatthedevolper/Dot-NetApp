@@ -48,6 +48,8 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/tailwindcss",
     'pinia-plugin-persistedstate/nuxt',
+    "@vueuse/nuxt",
+    "@nuxt/icon",
   ],
   pinia: {
     storesDirs: ['./stores/**', './stores'],

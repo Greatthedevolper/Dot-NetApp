@@ -3,52 +3,50 @@ definePageMeta({
   layout: "protected",
 });
 import { ref, onMounted } from "vue";
+import { toast } from 'vue3-toastify';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const user = useUserStore();
 const selectedTab = ref(0);
 const tabs = ["Sign In", "Register"];
-
-const selectedHotel = ref("");
-const selectedHotelId = ref("");
-const loginData = ref({ hotel: "", emailUser: "", passwordUser: "" });
+const loginData = ref({ email: "", password: "" });
+const registerData = ref({ name: "", email: "", password: "" });
 const dropdownOpen = ref(false);
 onMounted(async () => {
-  user.fetchHotelData();
-  filteredHotels.value = user.dataHotel.hotels;
 });
 
-function selectHotel(id, name) {
-  selectedHotel.value = name;
-  selectedHotelId.value = id;
-  loginData.value.hotel = id;
-  dropdownOpen.value = false;
-}
-function loginAccessHandler() {
-  user
-    .loginAccess(loginData.value)
-    .then((data) => {
-      console.log("Login successful", data);
-    })
-    .catch((error) => {
-      console.error("Login error:", error);
-    });
-}
 
-const filteredHotels = computed(() => {
-  const hotels = user.dataHotel?.hotels || [];
-  if (!selectedHotel.value) {
-    return hotels;
+async function loginAccessHandler() {
+  try {
+    const response = await user.loginAccess(loginData.value);
+
+    if (response.status === true) {
+      localStorage.setItem('accessToken', response.token);
+      user.authenticated = true;
+      user.user = response.user;
+      router.push('/');
+      toast.success(response.message);
+    }
+  } catch (error) {
+    console.error("Login failed:", error);
   }
-  return hotels.filter((hotel) =>
-    hotel.name.toLowerCase().includes(selectedHotel.value.toLowerCase())
-  );
-});
+}
+async function registerUser() {
+  try {
+    const response = await user.registration(registerData.value);
+
+    if (response.status === true) {
+      toast.success(response.message);
+      selectedTab.value = 0;
+    }
+  } catch (error) {
+  }
+}
+
 </script>
 
 <template>
-  <div class="auth-page" :style="{
-    backgroundImage: `url(${user.dataChain?.signin_bg})`,
-    backgroundSize: '100%',
-  }">
+  <div class="auth-page bg-base-200">
     <h2 class="auth-pge-heading">{{ user.dataChain?.name }}</h2>
     <div class="auth-wrapper">
       <div class="tab-button-wrapper">
@@ -59,28 +57,8 @@ const filteredHotels = computed(() => {
           <span>Register</span>
         </button>
       </div>
-      <Transition  name="fade" v-if="selectedTab === 0">
+      <Transition name="fade" v-if="selectedTab === 0">
         <form class="w-full h-full" @submit.prevent="loginAccessHandler">
-          <div class="dropdown w-full">
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3" tabindex="0">
-              <input type="search" class="grow" placeholder="Search" v-model="selectedHotel" role="button"
-                @click="dropdownOpen = !dropdownOpen" />
-            </label>
-            <ul v-if="dropdownOpen" tabindex="0" :style="{ background: `${user.dataChain?.login_color}` }"
-              class="dropdown-content menu flex-nowrap !bg-white rounded-[8px] z-[1] w-full px-2 py-4 shadow max-h-[180px] overflow-auto flex-col text-black">
-              <template v-if="filteredHotels.length > 0">
-                <li v-for="(item, index) in filteredHotels" :key="index" :value="item.id"
-                  :class="`hover:${user.dataChain?.login_color}`" @click="selectHotel(item.id, item.name)">
-                  <span>{{ item.name }}</span>
-                </li>
-              </template>
-              <template v-else>
-                <li>
-                  <span>No data found</span>
-                </li>
-              </template>
-            </ul>
-          </div>
 
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
@@ -89,7 +67,7 @@ const filteredHotels = computed(() => {
               <path
                 d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
             </svg>
-            <input type="text" class="grow" placeholder="Email" v-model="loginData.emailUser" required />
+            <input type="text" class="grow" placeholder="Email" v-model="loginData.email" required />
           </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
@@ -97,16 +75,16 @@ const filteredHotels = computed(() => {
                 d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                 clip-rule="evenodd" />
             </svg>
-            <input type="password" class="grow" placeholder="password" v-model="loginData.passwordUser" required />
+            <input type="password" class="grow" placeholder="password" v-model="loginData.password" required />
           </label>
           <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">Login</button>
         </form>
       </Transition>
-      <Transition  name="fade" v-if="selectedTab === 1">
-        <form class="w-full h-full" @submit.prevent="loginAccessHandler">
+      <Transition name="fade" v-if="selectedTab === 1">
+        <form class="w-full h-full" @submit.prevent="registerUser">
           <div class="dropdown w-full">
             <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3" tabindex="0">
-              <input type="text" class="grow" placeholder="Name" v-model="user.name" />
+              <input type="text" class="grow" placeholder="Name" v-model="registerData.name" />
             </label>
           </div>
 
@@ -117,7 +95,7 @@ const filteredHotels = computed(() => {
               <path
                 d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
             </svg>
-            <input type="text" class="grow" placeholder="Email" v-model="loginData.emailUser" required />
+            <input type="text" class="grow" placeholder="Email" v-model="registerData.email" required />
           </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
@@ -125,9 +103,9 @@ const filteredHotels = computed(() => {
                 d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                 clip-rule="evenodd" />
             </svg>
-            <input type="password" class="grow" placeholder="password" v-model="loginData.passwordUser" required />
+            <input type="password" class="grow" placeholder="password" v-model="registerData.password" required />
           </label>
-          <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">Login</button>
+          <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">Register</button>
         </form>
       </Transition>
     </div>
@@ -150,7 +128,8 @@ const filteredHotels = computed(() => {
       button {
         &.tab-button {
           @apply appearance-none border border-transparent rounded-t-xl px-2 h-12 w-full flex items-center justify-center;
-          &.active{
+
+          &.active {
             @apply bg-[var(--primaryColor)] text-white;
           }
         }

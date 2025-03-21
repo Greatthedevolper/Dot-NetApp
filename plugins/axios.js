@@ -13,8 +13,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Add request interceptor
   axiosInstance.interceptors.request.use(
     (config) => {
-      console.log("Making request to", config.url); // Log the URL of the request
-      // You can add more logic here if needed
+      // console.log("Making request to", config.url);
       return config;
     },
     (error) => {
@@ -31,11 +30,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       console.log("Response error code:", code);
 
       if (error && error.request && error.request.status === 0) {
-        nuxtApp.$toast.error({
-          title: error.message,
-          content: "Please check your internet connection!",
-          okText: "Ok",
-        });
+        nuxtApp.$toast.error(error?.response?.data?.message);
       } else if (
         code === 400 ||
         code === 411 ||
@@ -44,42 +39,25 @@ export default defineNuxtPlugin((nuxtApp) => {
         code === 422 ||
         code === 429
       ) {
-        nuxtApp.$toast.error({
-          title: "Alert!",
-          content: error.response?.data?.message || "An error occurred",
-          okText: "Ok",
-        });
+        nuxtApp.$toast.error(error.response?.data?.message);
       } else if (code === 401) {
         if (error.response?.data?.token_expired) {
           console.log("Token expired:", error.response.data.message);
         } else if (error.response?.data?.message === "Unauthenticated.") {
-          nuxtApp.$toast.error({
-            title: "Alert!",
-            content:
-              "You have checked out. Thank you for using our service. Have a nice day.",
-            okText: "Ok",
-          });
+          nuxtApp.$toast.error(error.response?.data?.message);
         } else if (
           !error.response?.data?.is_verified &&
           error.response?.data?.is_verified !== 0 &&
           error.response?.data?.is_verified !== 1
         ) {
-          nuxtApp.$toast.error({
-            title: "Alert!",
-            content:
-              error.response.data.message.charAt(0).toUpperCase() +
-              error.response.data.message.slice(1).toLowerCase(),
-            okText: "Ok",
-          });
+          nuxtApp.$toast.error(error.response?.data?.message);
         }
       } else if (code === 404) {
-        // Optional: Handle 404 error if needed
+        console.error("unauthorized error");
       }
 
       return Promise.reject(error);
     }
   );
-
-  // Make the Axios instance available throughout the app
   nuxtApp.provide("axios", axiosInstance);
 });

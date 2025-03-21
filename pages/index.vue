@@ -1,148 +1,120 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { NuxtLink } from "#components";
+import { watch } from "vue";
 const user = useUserStore();
-
-const selectedHotel = ref("");
-const selectedHotelId = ref("");
-const loginData = ref({ hotel: "", emailUser: "", passwordUser: "" });
-const dropdownOpen = ref(false);
-onMounted(async () => {
-  user.fetchHotelData();
-  filteredHotels.value = user.dataHotel.hotels;
+const listingSearch = ref('');
+const listings = ref([]);
+const pagination = ref({
+  pageSize: 10,
+  page: 1,
+  totalPages: 1,
+  totalCount: 0,
+  hasNext: false,
+  hasPrevious: false,
 });
 
-function selectHotel(id, name) {
-  selectedHotel.value = name;
-  selectedHotelId.value = id;
-  loginData.value.hotel = id;
-  dropdownOpen.value = false;
-}
-function loginAccessHandler() {
-  user
-    .loginAccess(loginData.value)
-    .then((data) => {
-      console.log("Login successful", data);
-    })
-    .catch((error) => {
-      console.error("Login error:", error);
+const fetchListings = async () => {
+  try {
+    const response = await user.fetchListings({
+      page: pagination.value.page,
+      pageSize: pagination.value.pageSize,
+      search: listingSearch.value,
     });
+    if (response?.data?.statusCode === 200) {
+      const { data, currentPage, totalPages, totalCount, hasNext, hasPrevious } = response.data;
+      listings.value = data.listings ?? [];
+
+      Object.assign(pagination.value, { page: currentPage, totalPages, totalCount, hasNext, hasPrevious });
+    } else {
+      listings.value = [];
+    }
+
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+  }
+}
+await fetchListings();
+
+let debounceTimer = null;
+watch(
+  listingSearch,
+  () => {
+    pagination.value.page = 1;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      fetchListings();
+    }, 500);
+  }
+);
+
+const nextPage = () => {
+  if (pagination.value.hasNext) {
+    pagination.value.page++;
+    fetchListings();
+  }
+}
+const prevPage = () => {
+  if (pagination.value.hasPrevious) {
+    pagination.value.page--;
+    fetchListings();
+  }
 }
 
-const filteredHotels = computed(() => {
-  const hotels = user.dataHotel?.hotels || [];
-  if (!selectedHotel.value) {
-    return hotels;
-  }
-  return hotels.filter((hotel) =>
-    hotel.name.toLowerCase().includes(selectedHotel.value.toLowerCase())
-  );
-});
+const selectedTag = async (tag) => {
+  listingSearch.value = tag;
+}
+
 </script>
 
 <template>
-  <div
-    class="w-screen h-screen flex items-center justify-center flex-col"
-    :style="{
-      backgroundImage: `url(${user.dataChain?.signin_bg})`,
-      backgroundSize: '100%',
-    }"
-  >
-    <h2 class="text-white font-bold text-[60px]">{{ user.dataChain?.name }}</h2>
-    <form
-      class="bg-white border border-white p-3 rounded-[10px] md:max-w-[400px] sm:max-w-[90%] max-w-full w-full"
-      @submit.prevent="loginAccessHandler"
-    >
-      <div class="dropdown w-full">
-        <label
-          class="input bg-transparent input-bordered flex items-center gap-2 mb-3"
-          tabindex="0"
-        >
-          <input
-            type="search"
-            class="grow"
-            placeholder="Search"
-            v-model="selectedHotel"
-            role="button"
-            @click="dropdownOpen = !dropdownOpen"
-          />
-        </label>
-        <ul
-          v-if="dropdownOpen"
-          tabindex="0"
-          :style="{ background: `${user.dataChain?.login_color}` }"
-          class="dropdown-content menu flex-nowrap !bg-white rounded-[8px] z-[1] w-full px-2 py-4 shadow max-h-[180px] overflow-auto flex-col text-black"
-        >
-          <template v-if="filteredHotels.length > 0">
-            <li
-              v-for="(item, index) in filteredHotels"
-              :key="index"
-              :value="item.id"
-              :class="`hover:${user.dataChain?.login_color}`"
-              @click="selectHotel(item.id, item.name)"
-            >
-              <span>{{ item.name }}</span>
-            </li>
-          </template>
-          <template v-else>
-            <li>
-              <span>No data found</span>
-            </li>
-          </template>
-        </ul>
-      </div>
+  <div class="h-[calc(100vh-56px)] bg-base-100">
+    <!-- Search Input -->
+    <div class="flex items-center justify-end py-3 px-3">
+      <input type="search" placeholder="Search listing" v-model="listingSearch"
+        class="border border-primary rounded-md h-10 basis-[250px] px-2 focus-visible:ring-0 focus-visible:outline-none" />
+    </div>
 
-      <label
-        class="input bg-transparent input-bordered flex items-center gap-2 mb-3"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          class="h-4 w-4 opacity-70"
-        >
-          <path
-            d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
-          />
-          <path
-            d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
-          />
-        </svg>
-        <input
-          type="text"
-          class="grow"
-          placeholder="Email"
-          v-model="loginData.emailUser"
-          required
-        />
-      </label>
-      <label
-        class="input bg-transparent input-bordered flex items-center gap-2 mb-3"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          class="h-4 w-4 opacity-70"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <input
-          type="password"
-          class="grow"
-          placeholder="password"
-          v-model="loginData.passwordUser"
-          required
-        />
-      </label>
-      <button class="btn w-full bg-blue-200" type="submit">Login</button>
-    </form>
+    <!-- Listings Grid -->
+    <div
+      class="h-[calc(100%-130px)] overflow-auto grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-3 px-3">
+      <template v-if="listings?.length > 0">
+        <div v-for="listing in listings" :key="listing.id" class="border border-primary rounded-md shadow shadow-white">
+          <NuxtLink to="/guest/sign-in">
+            <div class="border-b border-primary px-3 py-2">
+              <h3 class="line-clamp-2 mb-0 font-medium">{{ listing.title }}</h3>
+            </div>
+            <div class="p-3">
+              <p class="line-clamp-4">{{ listing.desc }}</p>
+              <div v-if="listing.tags" class="flex items-center gap-3 my-4">
+                <div v-for="tag in listing.tags.split(',')" :key="tag">
+                  <button @click="selectedTag(tag)"
+                    class="bg-primary text-white px-3 py-px rounded-full hover:bg-primaryText hover:text-primaryBg border border-primaryBg flex items-center gap-1 h-[30px]">
+                    <span class="capitalize text-[14px] leading-[14px]">{{ tag }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </template>
+    </div>
+
+    <!-- Pagination Controls -->
+    <template v-if="listings?.length > 0">
+      <div class="max-w-full w-full px-3">
+        <div class="flex justify-center gap-3 my-2 items-center">
+          <button @click="prevPage" :disabled="!pagination.hasPrevious"
+            class="px-4 py-2 border rounded bg-primary text-white disabled:opacity-50">
+            Previous
+          </button>
+          <span>Page {{ pagination.page }} of {{ pagination.totalPages }}</span>
+          <button @click="nextPage" :disabled="!pagination.hasNext"
+            class="px-4 py-2 border rounded bg-primary text-white disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
-<style>
-/* General autofill style */
-
-</style>

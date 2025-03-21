@@ -9,7 +9,8 @@ export const useUserStore = defineStore(
     const $axios = nuxtApp.$axios as any;
     const $url = nuxtApp.$url as any;
     const config = useRuntimeConfig();
-    const count = ref(0);
+    const authenticated = ref(false);
+    const user = ref(null);
 
     interface Hotel {
       name: string;
@@ -20,24 +21,45 @@ export const useUserStore = defineStore(
     }
     const dataHotel = ref<HotelData>({ hotels: [] });
     const dataChain = ref(null);
-    function increment() {
-      count.value++;
-    }
 
-    async function fetchHotelData() {
+    async function fetchListings(params: any) {
       try {
-        const response = await $axios.get($url.ALL_HOTELS);
-        dataHotel.value = response.data;
-        const res = await $axios.get($url.CHAIN_URL);
-        dataChain.value = res.data.data;
+        const response = await $axios.get($url.AllListings, { params });
+        return response;
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching listings:", error);
       }
     }
-    async function loginAccess(data: object) {
-      console.table(data);
-      return data;
+
+    async function VerifyEmail(data: { email: string; token: string }) {
+      try {
+        const response = await $axios.post($url.USER_VERIFY, data);
+        return response.data;
+      } catch (error: any) {
+        throw error?.response?.data?.message;
+      }
     }
+    async function loginAccess(data: { email: string; password: string }) {
+      try {
+        const response = await $axios.post($url.USER_LOGIN, data);
+        return response.data;
+      } catch (error: any) {
+        throw error?.response?.data?.message;
+      }
+    }
+    async function registration(data: {
+      name: string;
+      email: string;
+      password: string;
+    }) {
+      try {
+        const response = await $axios.post($url.USER_REGISTER, data);
+        return response.data;
+      } catch (error: any) {
+        throw error?.response?.data?.message;
+      }
+    }
+
     async function searchHotel(search: string) {
       if (!dataHotel.value) {
         return { hotels: [] };
@@ -54,13 +76,15 @@ export const useUserStore = defineStore(
     }
 
     return {
-      count,
-      increment,
-      fetchHotelData,
+      authenticated,
+      user,
+      fetchListings,
       dataHotel,
       dataChain,
       loginAccess,
+      registration,
       searchHotel,
+      VerifyEmail,
     };
   },
   {
