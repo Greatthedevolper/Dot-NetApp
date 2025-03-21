@@ -1,18 +1,29 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useStorage } from "@vueuse/core";
+import { ref, onMounted } from "vue";
 
-export const useGlobalStore = defineStore("global", {
-  state: () => ({
-    theme: useStorage("theme", ref("dark")), // Ensure reactivity
-  }),
-  actions: {
-    setTheme(newTheme: string) {
-      this.theme = newTheme;
+export const useGlobalStore = defineStore(
+  "global",
+  () => {
+    const theme = ref(process.client ? localStorage.getItem("theme") || "dark" : "dark");
+
+    function setTheme(newTheme: string) {
+      theme.value = newTheme;
       if (process.client) {
         localStorage.setItem("theme", newTheme);
       }
       document.documentElement.setAttribute("data-theme", newTheme);
-    },
+    }
+
+    onMounted(() => {
+      setTheme(theme.value);
+    });
+
+    return {
+      theme,
+      setTheme,
+    };
   },
-});
+  {
+    persist: true, 
+  }
+);
