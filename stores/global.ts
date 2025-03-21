@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 export const useGlobalStore = defineStore(
   "global",
   () => {
-    const theme = ref(process.client ? localStorage.getItem("theme") || "dark" : "dark");
+    const theme = ref("dark");
 
     function setTheme(newTheme: string) {
       theme.value = newTheme;
@@ -24,6 +24,6 @@ export const useGlobalStore = defineStore(
     };
   },
   {
-    persist: true, 
+    persist: true,
   }
 );
