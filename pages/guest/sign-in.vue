@@ -2,58 +2,55 @@
 definePageMeta({
   layout: "protected",
 });
-import { ref, onMounted } from "vue";
-import { toast } from 'vue3-toastify';
+import { ref, computed, watch } from "vue";
 import { useRouter, useRoute } from 'vue-router';
+import { toast } from 'vue3-toastify';
 const router = useRouter();
 const route = useRoute();
 const user = useUserStore();
-const selectedTab = ref(0);
-const tabs = ["Sign In", "Register"];
-const loginData = ref({ email: "", password: "" });
-const registerData = ref({ name: "", email: "", password: "" });
 const isPasswordVisible = ref(false);
+
+const authdata = ref({
+  name: '',
+  email: '',
+  password: '',
+})
 
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value;
 }
 
-
-async function loginAccessHandler() {
-  try {
-    const response = await user.loginAccess(loginData.value);
-
-    if (response.status === true) {
-      localStorage.setItem('accessToken', response.token);
-      user.authenticated = true;
-      user.user = response.user;
-      router.push('/');
-      toast.success(response.message);
-    }
-  } catch (error) {
-    console.error("Login failed:", error);
-  }
-}
-async function registerUser() {
-  try {
-    const response = await user.registration(registerData.value);
-
-    if (response.status === true) {
-      toast.success(response.message);
-      switchAuthType('login')
-      registerData.value.name = "";
-      registerData.value.email = "";
-      registerData.value.password = "";
-    }
-  } catch (error) {
-    console.error("Login failed:", error);
-  }
-}
+const selectedTab = computed(() => route.query.type === 'register' ? 1 : 0);
 const switchAuthType = (newType) => {
   router.replace({ query: { ...route.query, type: newType } });
-  selectedTab.value = newType === "register" ? 1 : 0;
+}
+
+const handleAuthAction = async () => {
+  try {
+    const isRegistering = selectedTab.value === 1;
+    const response = isRegistering ? await user.registration(authdata.value) : await user.loginAccess(authdata.value);
+    if (response.status === true) {
+      if (isRegistering) {
+        toast.success(response.message);
+        switchAuthType('login');
+        authdata.value = { name: '', email: '', password: '' };
+      } else {
+        localStorage.setItem('accessToken', response.token);
+        user.authenticated = true;
+        user.user = response.user;
+        router.push('/');
+        toast.success(response.message);
+      }
+    }
+  } catch (error) {
+    console.error("Authentication failed:", error);
+  }
 }
 watch(() => route.query.type, (newType) => {
+  if (!newType) {
+    switchAuthType('login');
+    return;
+  }
   if (newType) switchAuthType(newType);
 }, { immediate: true });
 
@@ -61,8 +58,10 @@ watch(() => route.query.type, (newType) => {
 
 <template>
   <div class="auth-page bg-base-200">
-    <h2 class="auth-pge-heading">{{ user.dataChain?.name }}</h2>
+    <h2 class="auth-pge-heading mb-6">{{ selectedTab === 0 ? 'Account Create' : 'Account Login' }}</h2>
     <div class="auth-wrapper custom-active">
+
+
       <div class="tab-button-wrapper">
         <button class="tab-button" :class="{ 'active custom-active': selectedTab === 0 }"
           @click="switchAuthType('login')">
@@ -73,59 +72,37 @@ watch(() => route.query.type, (newType) => {
           <span>Register</span>
         </button>
       </div>
-      <Transition name="fade" v-if="selectedTab === 0">
-        <form class="w-full h-full" @submit.prevent="loginAccessHandler">
 
+
+      <Transition name="fade">
+        <form class="w-full h-full" @submit.prevent="handleAuthAction">
+          <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3" tabindex="0"
+            v-if="selectedTab === 1">
+            <input type="text" class="grow" placeholder="Name" v-model="authdata.name" />
+          </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <IconsEmailIcon />
-            <input type="text" class="grow" placeholder="Email" v-model="loginData.email" required />
+            <input type="text" class="grow" placeholder="Email" v-model="authdata.email" required />
           </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <IconsEmailLockIcon />
             <input :type="isPasswordVisible ? 'text' : 'password'" class="grow" placeholder="password"
-              v-model="loginData.password" required />
+              v-model="authdata.password" required />
             <IconsCLoseEyeIcon v-if="isPasswordVisible" @click="togglePasswordVisibility" class="cursor-pointer" />
             <IconsOpenEyeIcon v-if="!isPasswordVisible" @click="togglePasswordVisibility" class="cursor-pointer" />
           </label>
-          <div class="flex items-end justify-between mb-3 h-12 px-3">
+          <div class="flex items-end justify-between mb-3 h-12 px-3" v-if="selectedTab === 0">
             <label class="inline-flex items-center">
               <input type="checkbox" class="checkbox" />
               <span class="ml-2">Remember me</span>
             </label>
             <NuxtLink to="/guest/forgot-password" class="text-inherit">Forgot password?</NuxtLink>
           </div>
-          <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">Login</button>
-        </form>
-      </Transition>
-      <Transition name="fade" v-if="selectedTab === 1">
-        <form class="w-full h-full" @submit.prevent="registerUser">
-          <div class="dropdown w-full">
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3" tabindex="0">
-              <input type="text" class="grow" placeholder="Name" v-model="registerData.name" />
-            </label>
-          </div>
-
-          <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
-              <path
-                d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-              <path
-                d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-            </svg>
-            <input type="text" class="grow" placeholder="Email" v-model="registerData.email" required />
-          </label>
-          <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
-              <path fill-rule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clip-rule="evenodd" />
-            </svg>
-            <input type="password" class="grow" placeholder="password" v-model="registerData.password" required />
-          </label>
-          <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">Register</button>
+          <button class="btn w-full bg-[var(--primaryColor)] text-white" type="submit">
+            {{ selectedTab === 0 ? 'Login' : 'Register' }}
+          </button>
         </form>
       </Transition>
     </div>
   </div>
 </template>
-<style></style>
