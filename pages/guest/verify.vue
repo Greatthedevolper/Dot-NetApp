@@ -4,17 +4,17 @@ definePageMeta({
 });
 
 import { ref, onMounted } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 const user = useUserStore();
+const router = useRouter();
 const route = useRoute();
 const token = ref("");
 const verifyData = ref({ email: "", token: "" });
-
+const isVerified = ref(false);
 onMounted(() => {
     verifyData.value.token = route.query.token;
     verifyData.value.email = route.query.email;
-    console.log("Token from URL:", route);
     userEmailVerified();
 });
 
@@ -24,44 +24,44 @@ async function userEmailVerified() {
 
         if (response.status === true) {
             toast.success(response.message);
+            isVerified.value = true;
+            // router.push('/guest/sign-in');
         }
     } catch (error) {
         console.error("Login failed:", error);
+        isVerified.value = false;
     }
 }
 </script>
 
 <template>
-    <div class="auth-page bg-red-100">
-        <div class="auth-wrapper">
-            {{ token }}
+    <div class="auth-page bg-base-200">
+        <h2 class="auth-pge-heading mb-4">Account Verification</h2>
+        <div class="auth-wrapper custom-active">
+            <template v-if="isVerified">
+                <div class="flex flex-col items-center justify-normal gap-3 w-full">
+                    <p>Your account is verified</p>
+                    <IconsVerifiedUser class="text-[60px] text-green-400" />
+
+                    <NuxtLink to="/guest/sign-in?type=login"
+                        class="bg-base-200 custom-active flex items-center justify-center rounded-lg px-2 py-3 grow shrink-0 w-full">
+                        Go to login</NuxtLink>
+
+                </div>
+            </template>
+            <template v-else>
+                <div class="flex flex-col items-center justify-normal gap-3 w-full">
+                    <p>Your account is unverified</p>
+                    <IconsUnVerifiedUser class="text-[60px] text-red-400" />
+
+                    <NuxtLink to="/guest/sign-in?type=register"
+                        class="bg-base-200 custom-active flex items-center justify-center rounded-lg px-2 py-3 grow shrink-0 w-full">
+                        Go to Register</NuxtLink>
+
+                </div>
+            </template>
+
         </div>
     </div>
 </template>
-<style>
-.auth-page {
-    @apply w-screen h-screen flex items-center justify-center flex-col;
-
-    .auth-pge-heading {
-        @apply text-white font-bold text-[60px];
-    }
-
-    .auth-wrapper {
-        @apply bg-white border border-white p-3 rounded-[10px] md:max-w-[400px] sm:max-w-[90%] max-w-full w-full;
-
-        .tab-button-wrapper {
-            @apply grid grid-cols-2;
-
-            button {
-                &.tab-button {
-                    @apply appearance-none border border-transparent rounded-t-xl px-2 h-12 w-full flex items-center justify-center;
-
-                    &.active {
-                        @apply bg-[var(--primaryColor)] text-white;
-                    }
-                }
-            }
-        }
-    }
-}
-</style>
+<style></style>

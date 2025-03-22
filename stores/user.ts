@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useNuxtApp, useRuntimeConfig } from "#app";
+import ForgotPassword from "~/pages/guest/forgot-password.vue";
 
 export const useUserStore = defineStore(
   "user",
@@ -59,20 +60,21 @@ export const useUserStore = defineStore(
         throw error?.response?.data?.message;
       }
     }
-
-    async function searchHotel(search: string) {
-      if (!dataHotel.value) {
-        return { hotels: [] };
+    async function ForgotPassword(data: { email: string }) {
+      try {
+        const response = await $axios.post($url.USER_PASSWORD_FORGET, data);
+        return response.data;
+      } catch (error: any) {
+        throw error;
       }
-      if (!search) {
-        return dataHotel.value;
+    }
+    async function ResetPassword(data: { email: string }) {
+      try {
+        const response = await $axios.post($url.USER_RESET_PASSWORD, data);
+        return response.data;
+      } catch (error: any) {
+        throw error;
       }
-      alert(search);
-      return {
-        hotels: dataHotel.value.hotels.filter((hotel: { name: string }) =>
-          hotel.name.toLowerCase().includes(search.toLowerCase())
-        ),
-      };
     }
 
     return {
@@ -83,8 +85,9 @@ export const useUserStore = defineStore(
       dataChain,
       loginAccess,
       registration,
-      searchHotel,
       VerifyEmail,
+      ForgotPassword,
+      ResetPassword
     };
   },
   {

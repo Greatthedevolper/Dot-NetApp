@@ -21,7 +21,7 @@ watch(() => globalStore.theme, (newTheme) => {
 
 <template>
     <div class="flex items-center gap-2">
-        <select v-model="globalStore.theme" class="select min-h-8 h-8 select-bordered w-full">
+        <select v-model="globalStore.theme" class="select min-h-8 h-8 select-bordered w-full capitalize">
             <option v-for="theme in themes" :key="theme" :value="theme">{{ theme }}</option>
         </select>
     </div>

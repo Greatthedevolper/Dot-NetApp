@@ -47,4 +47,8 @@ input:-moz-autofill {
   background-color: transparent !important;
   color: #000;
 }
+
+.custom-active {
+  box-shadow: inset 2px 2px 5px var(--fallback-bc, oklch(var(--bc)/0.2)), inset -2px -2px 5px var(--fallback-bc, oklch(var(--bc)/0.2));
+}
 </style>

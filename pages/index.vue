@@ -68,7 +68,7 @@ const selectedTag = async (tag) => {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-56px)] bg-base-100">
+  <div class="h-full bg-base-100">
     <!-- Search Input -->
     <div class="flex items-center justify-end py-3 px-3">
       <input type="search" placeholder="Search listing" v-model="listingSearch"
@@ -105,13 +105,25 @@ const selectedTag = async (tag) => {
       <div class="max-w-full w-full px-3">
         <div class="flex justify-center gap-3 my-2 items-center">
           <button @click="prevPage" :disabled="!pagination.hasPrevious"
-            class="px-4 py-2 border rounded bg-primary text-white disabled:opacity-50">
-            Previous
+            class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded bg-primary text-white disabled:opacity-50">
+            <IconsArrowCircleLeftIcon />
+            <span>
+              Previous
+            </span>
           </button>
-          <span>Page {{ pagination.page }} of {{ pagination.totalPages }}</span>
+          <ul class="flex items-center gap-2">
+            <li v-for="page in pagination.totalPages" :key="page">
+              <button @click="pagination.page = page; fetchListings()"
+                :class="{ 'bg-primary text-white': pagination.page === page }"
+                class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded">
+                <span>{{ page }}</span>
+              </button>
+            </li>
+          </ul>
           <button @click="nextPage" :disabled="!pagination.hasNext"
-            class="px-4 py-2 border rounded bg-primary text-white disabled:opacity-50">
-            Next
+            class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded bg-primary text-white disabled:opacity-50">
+            <span>Next</span>
+            <IconsArrowCircleRightIcon />
           </button>
         </div>
       </div>

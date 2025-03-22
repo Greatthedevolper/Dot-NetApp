@@ -20,17 +20,17 @@ const logout = async () => {
                 </NuxtLink>
                 <span v-if="user.user">Welcome {{ user.user?.name ?? 'Guest' }}</span>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-5">
 
                 <template v-if="user?.authenticated">
                     <button @click.stop="logout"
                         class="inline-flex items-center gap-2 rounded px-2 border border-dark py-1">
                         <span>Logout</span>
-                        <Icon name="solar:skateboarding-round-outline" style="color: white" />
+                        <IconsLogoutIcon />
                     </button>
                 </template>
                 <template v-else>
-                    <router-link to="/guest/sign-in" class="text-lg">Login</router-link>
+                    <router-link to="/guest/sign-in" class="text-base">Login</router-link>
 
                 </template>
                 <GlobalThemeSwitcher />
