@@ -72,7 +72,7 @@ const selectedTag = async (tag) => {
     <!-- Search Input -->
     <div class="flex items-center justify-end py-3 px-3">
       <input type="search" placeholder="Search listing" v-model="listingSearch"
-        class="border border-primary rounded-md h-10 basis-[250px] px-2 focus-visible:ring-0 focus-visible:outline-none" />
+        class="bg-transparent border border-primary rounded-md h-10 basis-[250px] px-2 focus-visible:ring-0 focus-visible:outline-none" />
     </div>
 
     <!-- Listings Grid -->
@@ -89,7 +89,7 @@ const selectedTag = async (tag) => {
               <div v-if="listing.tags" class="flex items-center gap-3 my-4">
                 <div v-for="tag in listing.tags.split(',')" :key="tag">
                   <button @click="selectedTag(tag)"
-                    class="bg-primary text-white px-3 py-px rounded-full hover:bg-primaryText hover:text-primaryBg border border-primaryBg flex items-center gap-1 h-[30px]">
+                    class="text-inherit px-3 py-px rounded-full hover:bg-transparent hover:text-primary border border-primary flex items-center gap-1 h-[30px]">
                     <span class="capitalize text-[14px] leading-[14px]">{{ tag }}</span>
                   </button>
                 </div>
@@ -105,7 +105,7 @@ const selectedTag = async (tag) => {
       <div class="max-w-full w-full px-3">
         <div class="flex justify-center gap-3 my-2 items-center">
           <button @click="prevPage" :disabled="!pagination.hasPrevious"
-            class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded bg-primary text-white disabled:opacity-50">
+            class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded bg-transparent text-inherit disabled:opacity-50">
             <IconsArrowCircleLeftIcon />
             <span>
               Previous
@@ -114,14 +114,14 @@ const selectedTag = async (tag) => {
           <ul class="flex items-center gap-2">
             <li v-for="page in pagination.totalPages" :key="page">
               <button @click="pagination.page = page; fetchListings()"
-                :class="{ 'bg-primary text-white': pagination.page === page }"
-                class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded">
+                :class="{ 'bg-primary text-inherit': pagination.page === page }"
+                class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded">
                 <span>{{ page }}</span>
               </button>
             </li>
           </ul>
           <button @click="nextPage" :disabled="!pagination.hasNext"
-            class="px-3 h-8 inline-flex items-center justify-center gap-2  border rounded bg-primary text-white disabled:opacity-50">
+            class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded bg-transparent text-inherit disabled:opacity-50">
             <span>Next</span>
             <IconsArrowCircleRightIcon />
           </button>

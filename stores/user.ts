@@ -76,6 +76,25 @@ export const useUserStore = defineStore(
         throw error;
       }
     }
+    async function getProfile() {
+      try {
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+          throw new Error("User is not authenticated.");
+        }
+
+        const response = await $axios.get($url.USER_PROFILE, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        return response.data;
+      } catch (error: any) {
+        throw error;
+      }
+    }
 
     return {
       authenticated,
@@ -87,7 +106,8 @@ export const useUserStore = defineStore(
       registration,
       VerifyEmail,
       ForgotPassword,
-      ResetPassword
+      ResetPassword,
+      getProfile,
     };
   },
   {

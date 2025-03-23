@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 
 export const useGlobalStore = defineStore(
   "global",
@@ -13,10 +13,6 @@ export const useGlobalStore = defineStore(
       }
       document.documentElement.setAttribute("data-theme", newTheme);
     }
-
-    onMounted(() => {
-      setTheme(theme.value);
-    });
 
     return {
       theme,

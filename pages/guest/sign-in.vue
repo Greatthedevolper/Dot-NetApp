@@ -23,6 +23,7 @@ const togglePasswordVisibility = () => {
 const selectedTab = computed(() => route.query.type === 'register' ? 1 : 0);
 const switchAuthType = (newType) => {
   router.replace({ query: { ...route.query, type: newType } });
+  // router.push({ query: { ...route.query, type: newType } });
 }
 
 const handleAuthAction = async () => {
@@ -35,11 +36,16 @@ const handleAuthAction = async () => {
         switchAuthType('login');
         authdata.value = { name: '', email: '', password: '' };
       } else {
+        debugger
         localStorage.setItem('accessToken', response.token);
         user.authenticated = true;
         user.user = response.user;
-        router.push('/');
         toast.success(response.message);
+        // router.push('/');
+        router.replace({ path: "/", query: {} }).then(() => {
+          location.reload();
+        });
+
       }
     }
   } catch (error) {
@@ -58,7 +64,7 @@ watch(() => route.query.type, (newType) => {
 
 <template>
   <div class="auth-page bg-base-200">
-    <h2 class="auth-pge-heading mb-6">{{ selectedTab === 0 ? 'Account Create' : 'Account Login' }}</h2>
+    <h2 class="auth-pge-heading mb-6">{{ selectedTab === 1 ? 'Account Create' : 'Account Login' }}</h2>
     <div class="auth-wrapper custom-active">
 
 
