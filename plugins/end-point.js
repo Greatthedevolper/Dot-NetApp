@@ -9,6 +9,8 @@ const url = {
   USER_PASSWORD_FORGET: "/api/users/forgot-password",
   USER_RESET_PASSWORD: "/api/users/reset-password",
   USER_PROFILE: "/api/users/profile",
+  USER_DASHBOARD: "/api/users/dashboard",
+  USER_TEST: "/api/users/test",
 };
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.provide("url", url);

@@ -36,7 +36,6 @@ const handleAuthAction = async () => {
         switchAuthType('login');
         authdata.value = { name: '', email: '', password: '' };
       } else {
-        debugger
         localStorage.setItem('accessToken', response.token);
         user.authenticated = true;
         user.user = response.user;

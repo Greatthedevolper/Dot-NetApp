@@ -8,11 +8,6 @@ const logout = async () => {
   user.authenticated = false;
   user.user = null;
 };
-
-const ProfileGet = async () => {
-  const response = await user.getProfile();
-  console.log(response);
-};
 </script>
 
 <template>
@@ -24,15 +19,13 @@ const ProfileGet = async () => {
         </NuxtLink>
         <template v-if="user.user">
           <span>Welcome {{ user.user?.name ?? "Guest" }}</span>
-          <span @click="ProfileGet">get profile</span>
         </template>
       </div>
       <div class="flex items-center gap-5">
         <template v-if="user?.authenticated">
-          <button
-            @click.stop="logout"
-            class="inline-flex items-center gap-2 rounded px-2 border border-primary py-1"
-          >
+          <NuxtLink to="/user/profile">Profile</NuxtLink>
+          <NuxtLink to="/user/dashboard">dashboard</NuxtLink>
+          <button @click.stop="logout" class="inline-flex items-center gap-2 rounded px-2 border border-primary py-1">
             <span>Logout</span>
             <IconsLogoutIcon />
           </button>

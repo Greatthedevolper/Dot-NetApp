@@ -96,6 +96,21 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function fetchUserListings(params: any) {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await $axios.get($url.USER_DASHBOARD, {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return response;
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      }
+    }
+
     return {
       authenticated,
       user,
@@ -108,6 +123,7 @@ export const useUserStore = defineStore(
       ForgotPassword,
       ResetPassword,
       getProfile,
+      fetchUserListings,
     };
   },
   {
