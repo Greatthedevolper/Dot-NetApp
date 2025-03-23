@@ -23,8 +23,8 @@ const logout = async () => {
       </div>
       <div class="flex items-center gap-5">
         <template v-if="user?.authenticated">
-          <NuxtLink to="/user/profile">Profile</NuxtLink>
-          <NuxtLink to="/user/dashboard">dashboard</NuxtLink>
+          <NuxtLink to="/user/profile" class="capitalize">Profile</NuxtLink>
+          <NuxtLink to="/user/dashboard" class="capitalize">dashboard</NuxtLink>
           <button @click.stop="logout" class="inline-flex items-center gap-2 rounded px-2 border border-primary py-1">
             <span>Logout</span>
             <IconsLogoutIcon />

@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { NuxtLink } from "#components";
 import { watch } from "vue";
 const user = useUserStore();
 const listingSearch = ref('');
 const listings = ref([]);
+const tableView = ref(false);
 const pagination = ref({
     pageSize: 10,
     page: 1,
@@ -64,69 +64,56 @@ const prevPage = () => {
 const selectedTag = async (tag) => {
     listingSearch.value = tag;
 }
-
+const changeView = (view) => {
+    tableView.value = view === 'table' ? true : false
+}
 </script>
 
 <template>
     <div class="h-full bg-base-100">
-        <div class="flex items-center justify-end py-3 px-3">
+        <div class="flex items-center justify-between py-3 px-3">
+            <div class="flex items-center gap-2">
+                <span role="button" class="text-3xl text-inherit" :class="{ 'text-primary text-3xl': tableView }"
+                    @click="changeView('table')">
+                    <IconsTableRows />
+                </span>
+                <span role="button" class="text-2xl text-inherit" :class="{ 'text-primary text-3xl': !tableView }"
+                    @click="changeView('card')">
+                    <IconsViewColumn />
+                </span>
+            </div>
             <input type="search" placeholder="Search listing" v-model="listingSearch"
                 class="bg-transparent border border-primary rounded-md h-10 basis-[250px] px-2 focus-visible:ring-0 focus-visible:outline-none" />
         </div>
 
         <!-- Listings Grid -->
-        <div
-            class="h-[calc(100%-130px)] overflow-auto grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-3 px-3">
+        <div class="h-[calc(100%-110px)] overflow-auto">
             <template v-if="listings?.length > 0">
-                <div v-for="listing in listings" :key="listing.id"
-                    class="border border-primary rounded-md shadow shadow-white">
-                    <NuxtLink to="/guest/sign-in">
-                        <div class="border-b border-primary px-3 py-2">
-                            <h3 class="line-clamp-2 mb-0 font-medium">{{ listing.title }}</h3>
-                        </div>
-                        <div class="p-3">
-                            <p class="line-clamp-4">{{ listing.desc }}</p>
-                            <div v-if="listing.tags" class="flex items-center gap-3 my-4">
-                                <div v-for="tag in listing.tags.split(',')" :key="tag">
-                                    <button @click="selectedTag(tag)"
-                                        class="text-inherit px-3 py-px rounded-full hover:bg-transparent hover:text-primary border border-primary flex items-center gap-1 h-[30px]">
-                                        <span class="capitalize text-[14px] leading-[14px]">{{ tag }}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </NuxtLink>
+                <template v-if="!tableView">
+                    <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-3 px-3">
+                        <GlobalListingCard v-for="listing in listings" :key="listing.id" :item="listing"
+                            :selectedTag="selectedTag" />
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="px-3">
+                        <GlobalListingTable :listings="listings" :selectedTag="selectedTag" />
+                    </div>
+                </template>
+            </template>
+            <template v-else>
+                <div class="flex flex-col items-center justify-center h-full gap-3">
+                    <span class="text-5xl text-primary">
+                        <IconsNoData />
+                    </span>
+                    <p class="capitalize"> no data found</p>
                 </div>
             </template>
         </div>
-
         <!-- Pagination Controls -->
         <template v-if="listings?.length > 0">
-            <div class="max-w-full w-full px-3">
-                <div class="flex justify-center gap-3 my-2 items-center">
-                    <button @click="prevPage" :disabled="!pagination.hasPrevious"
-                        class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded bg-transparent text-inherit disabled:opacity-50">
-                        <IconsArrowCircleLeftIcon />
-                        <span>
-                            Previous
-                        </span>
-                    </button>
-                    <ul class="flex items-center gap-2">
-                        <li v-for="page in pagination.totalPages" :key="page">
-                            <button @click="pagination.page = page; fetchListings()"
-                                :class="{ 'bg-primary text-inherit': pagination.page === page }"
-                                class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded">
-                                <span>{{ page }}</span>
-                            </button>
-                        </li>
-                    </ul>
-                    <button @click="nextPage" :disabled="!pagination.hasNext"
-                        class="px-3 h-8 inline-flex items-center justify-center gap-2  border border-primary rounded bg-transparent text-inherit disabled:opacity-50">
-                        <span>Next</span>
-                        <IconsArrowCircleRightIcon />
-                    </button>
-                </div>
-            </div>
+            <GlobalPagination :pagination="pagination" :nextPage="nextPage" :prevPage="prevPage"
+                :fetchListings="fetchListings" />
         </template>
     </div>
 </template>
