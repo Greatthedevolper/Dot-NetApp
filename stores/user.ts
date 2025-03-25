@@ -110,6 +110,21 @@ export const useUserStore = defineStore(
         console.error("Error fetching listings:", error);
       }
     }
+    async function setUserProfilePicture(formData: FormData) {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await $axios.post($url.UPDATE_PROFILE_PIC, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // Required for file uploads
+          },
+        });
+        return response.data; // Make sure to return only response data
+      } catch (error) {
+        console.error("Error setting picture:", error);
+        return null; // Return null on error to prevent breaking the UI
+      }
+    }
 
     return {
       authenticated,
@@ -124,6 +139,7 @@ export const useUserStore = defineStore(
       ResetPassword,
       getProfile,
       fetchUserListings,
+      setUserProfilePicture,
     };
   },
   {

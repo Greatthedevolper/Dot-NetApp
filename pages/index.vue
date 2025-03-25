@@ -16,6 +16,7 @@ const pagination = ref({
 });
 
 const fetchListings = async () => {
+  if(!user?.authenticated) return
   try {
     const response = await user.fetchListings({
       page: pagination.value.page,
