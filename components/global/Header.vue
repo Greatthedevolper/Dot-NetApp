@@ -18,7 +18,7 @@ const logout = async () => {
           <IconsLogo />
         </NuxtLink>
         <template v-if="user.user">
-          <span>Welcome {{ user.user?.name ?? "Guest" }}</span>
+          <span class="capitalize">Welcome {{ user.user?.name ?? "Guest" }}</span>
         </template>
       </div>
       <div class="flex items-center gap-5">

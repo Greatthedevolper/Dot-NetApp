@@ -11,6 +11,7 @@ const url = {
   USER_PROFILE: "/api/users/profile",
   USER_DASHBOARD: "/api/users/dashboard",
   UPDATE_PROFILE_PIC: "/api/users/profile/update-picture",
+  UPDATE_USER_PROFILE: "/api/users/profile/update",
 };
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.provide("url", url);

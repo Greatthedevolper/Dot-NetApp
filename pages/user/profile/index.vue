@@ -38,7 +38,12 @@ const editForm = () => {
 
 // Handle profile update
 const ProfileUpdate = async () => {
-    const response = await user.ProfileUpdate(editProfile.value);
+    const payload = {
+        Id: profile.value.id,
+        Name: editProfile.value.name,
+        Email: editProfile.value.email,
+    }
+    const response = await user.userProfileUpdate(payload);
     if (response.status) {
         toast.success(response.message);
         isEdit.value = false;
@@ -71,8 +76,8 @@ const ProfileUpdatePicture = async (event) => {
 <template>
     <div class="bg-base-300 h-full">
         <div class="container mx-auto pt-4">
-            <div class="flex items-start gap-4">
-                <div class="flex-1">
+            <div class="flex items-center gap-4">
+                <div class="flex-1 custom-active rounded-lg bg-base-200 p-4 relative">
                     <div class="flex items-center gap-2 mb-4">
                         <h1 class="text-2xl font-semibold">Profile</h1>
                         <button @click="editForm" class="btn btn-sm">
@@ -101,14 +106,17 @@ const ProfileUpdatePicture = async (event) => {
                     <div class="flex flex-col items-center justify-center max-w-min mx-auto relative">
                         <div class="bg-base-200 rounded-t-full top-[2px] inline-block z-20 size-32 p-3">
                             <label
-                                class="size-28 rounded-full border group overflow-hidden p-px absolute top-3 -translate-x-1/2 left-1/2"
+                                class="size-28 rounded-full border group p-px absolute top-3 -translate-x-1/2 left-1/2"
                                 role="button" for="profile-pic">
                                 <input type="file" accept="image/*" id="profile-pic"
                                     class="invisible w-0 h-0 absolute top-0" @change="ProfileUpdatePicture" />
                                 <img class="rounded-full bg-cover w-full h-full" :src="editProfile.picture"
                                     alt="Profile Picture" />
-                                <IconsUploadIcon class="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                    group-hover:visible invisible z-20" />
+                                <span
+                                    class="absolute bottom-[2px] right-2 z-20 rounded-full bg-base-300 border-3 border-base-300 p-px text-base inline-flex items-center justify-center size-6">
+
+                                    <IconsUploadIcon class="text-inherit " />
+                                </span>
                                 <div
                                     class="absolute w-full h-full bg-dark/60 top-0 left-0 z-10 invisible group-hover:visible">
                                 </div>
@@ -121,8 +129,8 @@ const ProfileUpdatePicture = async (event) => {
                     </div>
                 </div>
             </div>
+            
+            <pre>{{ profile }}</pre>
         </div>
-        <pre>{{ editProfile }}</pre>
-        <pre>{{ profile }}</pre>
     </div>
 </template>

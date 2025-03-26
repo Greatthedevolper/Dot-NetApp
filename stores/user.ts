@@ -125,7 +125,14 @@ export const useUserStore = defineStore(
         return null; // Return null on error to prevent breaking the UI
       }
     }
-
+    async function userProfileUpdate(data: { Email: string; Name: string,Id:BigInteger }) {
+      try {
+        const response = await $axios.post($url.UPDATE_USER_PROFILE+'/'+data.Id, data);
+        return response.data;
+      } catch (error: any) {
+        throw error;
+      }
+    }
     return {
       authenticated,
       user,
@@ -140,6 +147,7 @@ export const useUserStore = defineStore(
       getProfile,
       fetchUserListings,
       setUserProfilePicture,
+      userProfileUpdate,
     };
   },
   {
