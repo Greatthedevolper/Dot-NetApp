@@ -43,6 +43,7 @@ export const useUserStore = defineStore(
     async function loginAccess(data: { email: string; password: string }) {
       try {
         const response = await $axios.post($url.USER_LOGIN, data);
+        user.value = response.user;
         return response.data;
       } catch (error: any) {
         throw error?.response?.data?.message;
@@ -89,7 +90,7 @@ export const useUserStore = defineStore(
             Authorization: `Bearer ${token}`,
           },
         });
-
+        user.value = response.data.user;
         return response.data;
       } catch (error: any) {
         throw error;
@@ -125,9 +126,16 @@ export const useUserStore = defineStore(
         return null; // Return null on error to prevent breaking the UI
       }
     }
-    async function userProfileUpdate(data: { Email: string; Name: string,Id:BigInteger }) {
+    async function userProfileUpdate(data: {
+      Email: string;
+      Name: string;
+      Id: BigInteger;
+    }) {
       try {
-        const response = await $axios.post($url.UPDATE_USER_PROFILE+'/'+data.Id, data);
+        const response = await $axios.post(
+          $url.UPDATE_USER_PROFILE + "/" + data.Id,
+          data
+        );
         return response.data;
       } catch (error: any) {
         throw error;

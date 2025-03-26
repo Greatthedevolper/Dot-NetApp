@@ -38,7 +38,6 @@ const handleAuthAction = async () => {
       } else {
         localStorage.setItem('accessToken', response.token);
         user.authenticated = true;
-        user.user = response.user;
         toast.success(response.message);
         // router.push('/');
         router.replace({ path: "/", query: {} }).then(() => {

@@ -97,7 +97,7 @@ const ProfileUpdatePicture = async (event) => {
                                 <input type="email" class="grow" placeholder="Email" v-model="editProfile.email"
                                     :disabled="!isEdit" />
                             </label>
-                            <button type="submit" class="btn btn-primary" v-if="isEdit">Update</button>
+                            <button type="submit" class="btn btn-primary h-8 min-h-8" v-if="isEdit">Update</button>
                         </form>
                     </div>
                 </div>
@@ -129,8 +129,6 @@ const ProfileUpdatePicture = async (event) => {
                     </div>
                 </div>
             </div>
-            
-            <pre>{{ profile }}</pre>
         </div>
     </div>
 </template>
