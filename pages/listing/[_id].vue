@@ -22,17 +22,18 @@ const getSingleListingOnPageLoad = async () => {
 
 onMounted(getSingleListingOnPageLoad);
 const listingImage = (img) => {
-    var computedImage = img == null ? '/images/default_listing-image.jpeg' :
-        !img.includes('.png' || '.jpeg' || '.webp' || '.svg') ? '/images/default_listing-image.jpeg' : img;
-    return computedImage;
+    if (!img) return "/images/default_listing-image.jpeg";
+
+    const validExtensions = [".png", ".jpeg", ".webp", ".svg"];
+    const hasValidExtension = validExtensions.some(ext => img.includes(ext));
+
+    return hasValidExtension ? img : "/images/default_listing-image.jpeg";
 };
+
 </script>
 
 <template>
     <div class="bg-base-300 h-full py-5">
-        <pre>
-            {{ singleUser }}
-        </pre>
         <div class="px-3 max-w-[1100px]">
             <div
                 class="flex items-center justify-between mb-6 bg-primaryText  text-primaryBg hover:bg-primaryBg hover:text-primaryText border border-primaryText p-6 rounded-md font-medium">
@@ -43,7 +44,7 @@ const listingImage = (img) => {
             </div>
             <div class="flex gap-4 md:flex-row flex-col">
                 <div class="md:w-1/4 md:h-auto w-full h-[150px] shrink-0">
-                    <img :src="singleListing?.image" alt="listing image" loading="lazy"
+                    <img :src="listingImage(singleListing?.image)" alt="listing image" loading="lazy"
                         class="w-full h-full object-cover rounded">
                 </div>
                 <div class="grow">
@@ -53,7 +54,7 @@ const listingImage = (img) => {
                         <div class="flex items-center justify-between mb-6 border-b border-slate-200 pb-2">
                             <p class="capitalize"> Listing details </p>
                             <div class="flex items-center gap-2">
-                                <a href="#" class="btn btn-primary ">
+                                <a :href="`/listing/create?id=${singleListing?.id}`" class="btn btn-primary ">
                                     Edit</a>
                                 <button class="btn btn-danger">
                                     <span class="capitalize text-[12px] leading-[12px]">Delete</span>

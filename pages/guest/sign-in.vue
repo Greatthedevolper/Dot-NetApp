@@ -86,7 +86,7 @@ watch(() => route.query.type, (newType) => {
           </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <IconsEmailIcon />
-            <input type="text" class="grow" placeholder="Email" v-model="authdata.email" required />
+            <input type="email" class="grow" placeholder="Email" v-model="authdata.email" required />
           </label>
           <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
             <IconsEmailLockIcon />
