@@ -3,6 +3,7 @@
         "nuxt",
         "nuxtjs",
         "persistedstate",
+        "squircle",
         "toastify",
         "unplugin",
         "vueuse"

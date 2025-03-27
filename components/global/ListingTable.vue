@@ -1,24 +1,66 @@
 <script setup>
 import { ref, computed } from "vue";
-defineProps({
+
+// Props
+const props = defineProps({
     listings: Object,
     selectedTag: Function
-})
-const listingStatus = (status) => {
-    var classes = status == 1 ? 'bg-green-100 text-green-800' : status == 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-    var label = status == 1 ? 'Approved' : status == 0 ? 'Pending' : 'Rejected'
-    return { classes, label }
+});
+const selectedItems = ref([]);
+
+const selectAll = (event) => {
+    if (event.target.checked) {
+        selectedItems.value = props.listings.map(item => item.id);
+    } else {
+        selectedItems.value = [];
+    }
+    console.log(selectedItems.value)
+};
+
+const isAllSelected = computed(() => {
+    return props.listings.length > 0 && selectedItems.value.length === props.listings.length;
+});
+
+const isIndeterminate = computed(() => {
+    return selectedItems.value.length > 0 && selectedItems.value.length < props.listings.length;
+});
+const singleSelect = (event, id) => {
+    if (event.target.checked) {
+        if (!selectedItems.value.includes(id)) {
+            selectedItems.value.push(id);
+        }
+    } else {
+        selectedItems.value = selectedItems.value.filter(itemId => itemId !== id)
+
+    }
+    console.log(selectedItems.value);
 }
+
+const listingStatus = (status) => {
+    var classes = status == 1 ? 'bg-green-100 text-green-800'
+        : status == 0 ? 'bg-yellow-100 text-yellow-800'
+            : 'bg-red-100 text-red-800';
+    var label = status == 1 ? 'Approved'
+        : status == 0 ? 'Pending'
+            : 'Rejected';
+    return { classes, label };
+};
+const listingImage = (img) => {
+    var computedImage = img == null ? '/images/default_listing-image.jpeg' :
+        !img.includes('.png' || '.jpeg' || '.webp' || '.svg') ? '/images/default_listing-image.jpeg' : img;
+    return computedImage;
+};
 </script>
+
 <template>
-    <div class=" relative">
+    <div class="relative">
         <table class="table relative">
-            <!-- head -->
-            <thead class="sticky top-0  z-10">
+            <thead class="sticky top-0 z-10">
                 <tr>
                     <th class="rounded-l-lg bg-base-200">
                         <label>
-                            <input type="checkbox" class="checkbox" />
+                            <input type="checkbox" class="checkbox" :checked="isAllSelected"
+                                :indeterminate="isIndeterminate" @change="selectAll" />
                         </label>
                     </th>
                     <th class="bg-base-200">Title</th>
@@ -32,20 +74,24 @@ const listingStatus = (status) => {
                     <tr class="hover:bg-base-200 border-primary">
                         <th>
                             <label>
-                                <input type="checkbox" class="checkbox" />
+                                <input type="checkbox" class="checkbox" :value="item.id" v-model="selectedItems"
+                                    @change="(event) => singleSelect(event, item.id)" />
                             </label>
                         </th>
                         <td>
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <div class="mask mask-squircle h-12 w-12">
-                                        <img src="https://img.daisyui.com/images/profile/demo/2@94.webp"
-                                            alt="Avatar Tailwind CSS Component" />
+                                        <img :src="listingImage(item.image)" alt="Avatar Tailwind CSS Component" />
+
                                     </div>
+
                                 </div>
+
                                 <div>
                                     <div class="font-bold line-clamp-1">{{ item.title }}</div>
                                     <div class="text-sm opacity-50">{{ item.email }}</div>
+                                    <div class="text-sm opacity-50">{{ item.image }}</div>
                                 </div>
                             </div>
                         </td>
@@ -53,7 +99,7 @@ const listingStatus = (status) => {
                             <p class="line-clamp-2 mb-1">
                                 {{ item.desc }}
                             </p>
-                            <div v-if="item.tags" class="flex items-center gap-3 ">
+                            <div v-if="item.tags" class="flex items-center gap-3">
                                 <div v-for="tag in item.tags.split(',')" :key="tag">
                                     <button @click="selectedTag(tag)"
                                         class="text-inherit px-3 py-px rounded-full hover:bg-transparent hover:text-primary border border-primary flex items-center gap-1 h-[30px]">
@@ -68,11 +114,9 @@ const listingStatus = (status) => {
                                 <span>{{ listingStatus(item.approved).label }}</span>
                             </span>
                         </td>
-
                         <th>
                             <div class="flex items-center gap-2">
-
-                                <button class="btn btn-ghost btn-xs">View</button>
+                                <NuxtLink :to="`/listing/${item.id}`" class="btn btn-ghost btn-xs">View</NuxtLink>
                                 <button class="btn btn-ghost btn-xs">Edit</button>
                                 <button class="btn btn-ghost btn-xs">Delete</button>
                             </div>

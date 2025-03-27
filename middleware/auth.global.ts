@@ -1,20 +1,27 @@
 import { useGlobalStore } from "@/stores/global";
+import { useUserStore } from "@/stores/user";
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  if (import.meta.server) return;
+  if (process.server) return;
 
   const themeStore = useGlobalStore();
-  if (process.client) {
-    document.documentElement.setAttribute("data-theme", themeStore.theme);
-  }
+  const userStore = useUserStore();
+
+  document.documentElement.setAttribute("data-theme", themeStore.theme);
 
   const token =
-    localStorage.getItem("accessToken") ||
-    sessionStorage.getItem("accessToken");
+    process.client &&
+    (localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken"));
 
-  if (!token && !to.path.startsWith("/guest")) {
-    return navigateTo("/guest/sign-in");
-  } else if (token && to.name === "guest-sign-in") {
-    return navigateTo("/");
+  const isAuthenticated = userStore.authenticated;
+
+  if ((!token || !isAuthenticated) && !to.path.startsWith("/guest")) {
+    userStore.userLogout();
+    return navigateTo("/guest/sign-in", { replace: true });
+  }
+
+  if (token && isAuthenticated && to.name === "guest-sign-in") {
+    return navigateTo("/", { replace: true });
   }
 });

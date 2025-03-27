@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useNuxtApp, useRuntimeConfig } from "#app";
-import ForgotPassword from "~/pages/guest/forgot-password.vue";
-
+import { useRouter } from "vue-router";
 export const useUserStore = defineStore(
   "user",
   () => {
@@ -12,6 +11,7 @@ export const useUserStore = defineStore(
     const config = useRuntimeConfig();
     const authenticated = ref(false);
     const user = ref(null);
+    const router = useRouter();
 
     interface Hotel {
       name: string;
@@ -141,6 +141,12 @@ export const useUserStore = defineStore(
         throw error;
       }
     }
+    async function userLogout() {
+      localStorage.removeItem("accessToken");
+      router.push("/guest/sign-in");
+      authenticated.value = false;
+      user.value = null;
+    }
     return {
       authenticated,
       user,
@@ -156,6 +162,7 @@ export const useUserStore = defineStore(
       fetchUserListings,
       setUserProfilePicture,
       userProfileUpdate,
+      userLogout,
     };
   },
   {

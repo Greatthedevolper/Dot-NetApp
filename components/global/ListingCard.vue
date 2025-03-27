@@ -10,7 +10,8 @@ defineProps({
             <h3 class="line-clamp-2 mb-0 font-medium">{{ item.title }}</h3>
         </div>
         <div class="p-3">
-            <p class="line-clamp-4">{{ item.desc }}</p>
+            <p class="line-clamp-4 text-pretty">{{ item.desc }}</p>
+            <NuxtLink :to="`/listing/${item.id}`">View</NuxtLink>
             <div v-if="item.tags" class="flex items-center gap-3 my-4">
                 <div v-for="tag in item.tags.split(',')" :key="tag">
                     <button @click="selectedTag(tag)"

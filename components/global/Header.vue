@@ -3,10 +3,7 @@ import { useRouter } from "vue-router";
 const user = useUserStore();
 const router = useRouter();
 const logout = async () => {
-  localStorage.removeItem("accessToken");
-  router.push("/guest/sign-in");
-  user.authenticated = false;
-  user.user = null;
+  user.userLogout();
 };
 </script>
 

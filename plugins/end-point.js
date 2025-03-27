@@ -2,16 +2,20 @@
 const url = {
   name: "Base Url",
   AllUsers: "/api/users",
-  AllListings: "/api/listings",
   USER_REGISTER: "/api/users/register",
   USER_LOGIN: "/api/users/login",
   USER_VERIFY: "/api/users/verify-account",
   USER_PASSWORD_FORGET: "/api/users/forgot-password",
   USER_RESET_PASSWORD: "/api/users/reset-password",
   USER_PROFILE: "/api/users/profile",
-  USER_DASHBOARD: "/api/users/dashboard",
   UPDATE_PROFILE_PIC: "/api/users/profile/update-picture",
   UPDATE_USER_PROFILE: "/api/users/profile/update",
+
+  //listings
+  AllListings: "/api/listings",
+  USER_DASHBOARD: "/api/users/dashboard",
+
+  GET_SINGLE_LISTING: "/api/listing", //give id in function
 };
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.provide("url", url);
