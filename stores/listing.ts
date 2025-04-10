@@ -19,11 +19,11 @@ export const useListingStore = defineStore(
 
     async function fetchUserListings(params: any) {
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = useCookie('accessToken');
         const response = await $axios.get($url.USER_DASHBOARD, {
           params,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
           },
         });
         return response;
@@ -34,16 +34,35 @@ export const useListingStore = defineStore(
 
     async function fetchSingleListing(params: { id: BigInteger }) {
       try {
-        const response = await $axios.get(`${$url.GET_SINGLE_LISTING}/${params.id}`);
+        const response = await $axios.get(
+          `${$url.GET_SINGLE_LISTING}/${params.id}`
+        );
         return response;
       } catch (error) {
         console.error("Error fetching listing:", error);
       }
     }
+
+    //create or edit a listing
+
+    async function saveListing(formData: FormData) {
+      try {
+        const response = await $axios.post($url.AllListings, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        return response;
+      } catch (error) {
+        console.error("Error saving listing:", error);
+      }
+    }
+
     return {
       fetchListings,
       fetchUserListings,
       fetchSingleListing,
+      saveListing,
     };
   },
   {

@@ -9,6 +9,14 @@ const router = useRouter();
 const route = useRoute();
 const user = useUserStore();
 const isPasswordVisible = ref(false);
+import { useCookie } from '#app';
+
+const token = useCookie('accessToken', {
+  maxAge: 60 * 60 * 24 * 7,
+  sameSite: 'lax',
+  path: '/',
+});
+
 
 const authdata = ref({
   name: '',
@@ -36,12 +44,13 @@ const handleAuthAction = async () => {
         switchAuthType('login');
         authdata.value = { name: '', email: '', password: '' };
       } else {
-        localStorage.setItem('accessToken', response.token);
+        user.user = response.user;
+        token.value = response.token;
         user.authenticated = true;
         toast.success(response.message);
         // router.push('/');
         router.replace({ path: "/", query: {} }).then(() => {
-          location.reload();
+          // location.reload();
         });
 
       }

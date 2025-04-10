@@ -79,7 +79,7 @@ export const useUserStore = defineStore(
     }
     async function getProfile() {
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = useCookie("accessToken");
 
         if (!token) {
           throw new Error("User is not authenticated.");
@@ -87,7 +87,7 @@ export const useUserStore = defineStore(
 
         const response = await $axios.get($url.USER_PROFILE, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
           },
         });
         user.value = response.data.user;
@@ -99,11 +99,11 @@ export const useUserStore = defineStore(
 
     async function fetchUserListings(params: any) {
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = useCookie("accessToken");
         const response = await $axios.get($url.USER_DASHBOARD, {
           params,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
           },
         });
         return response;
@@ -113,10 +113,10 @@ export const useUserStore = defineStore(
     }
     async function setUserProfilePicture(formData: FormData) {
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = useCookie("accessToken");
         const response = await $axios.post($url.UPDATE_PROFILE_PIC, formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
             "Content-Type": "multipart/form-data", // Required for file uploads
           },
         });
@@ -143,10 +143,13 @@ export const useUserStore = defineStore(
     }
     async function userLogout() {
       localStorage.removeItem("accessToken");
-      router.push("/guest/sign-in");
+      const accessToken = useCookie("accessToken");
+      accessToken.value = null;
       authenticated.value = false;
       user.value = null;
+      router.push("/guest/sign-in");
     }
+
     return {
       authenticated,
       user,

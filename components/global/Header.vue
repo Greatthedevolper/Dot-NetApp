@@ -1,4 +1,5 @@
 <script setup>
+import { NuxtLink } from "#components";
 import { useRouter } from "vue-router";
 const user = useUserStore();
 const router = useRouter();
@@ -8,8 +9,8 @@ const logout = async () => {
 </script>
 
 <template>
-  <header class="h-15 bg-base-200 shadow-lg py-3">
-    <div class="px-4 flex items-center justify-between h-full">
+  <header class="h-15 bg-base-200 shadow-lg py-3 ">
+    <div class="px-4 flex items-center justify-between h-full  max-w-[1100px] mx-auto">
       <div class="flex items-center gap-2">
         <NuxtLink to="/">
           <IconsLogo />
@@ -28,7 +29,7 @@ const logout = async () => {
           </button>
         </template>
         <template v-else>
-          <router-link to="/guest/sign-in" class="text-base">Login</router-link>
+          <NuxtLink to="/guest/sign-in">Login</NuxtLink>
         </template>
         <GlobalThemeSwitcher />
       </div>

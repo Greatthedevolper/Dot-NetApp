@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const token =
     process.client &&
-    (localStorage.getItem("accessToken") ||
+    (useCookie("accessToken") ||
       sessionStorage.getItem("accessToken"));
 
   const isAuthenticated = userStore.authenticated;

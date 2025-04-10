@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 const listing = useListingStore();
@@ -53,22 +53,43 @@ const listingImage = (img) => {
 </script>
 <template>
     <div class="bg-base-300 h-full py-5">
-        <div class="px-3 max-w-[1100px]">
-            {{ singleListing }}
-        </div>
-        <h2>{{ isEdit ? 'Edit your listing' : 'Create a listing' }}</h2>
+        <div class="max-w-[1100px] mx-auto">
+            <div class="px-3 max-w-[1100px] mx-auto">
+                {{ singleListing }}
+            </div>
+            <h2>{{ isEdit ? 'Edit your listing' : 'Create a listing' }}</h2>
 
-        <form @submit.prevent="submitListing">
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="title" v-model="formListing.title" required />
-            </label>
-            <textarea placeholder="Description" class="textarea textarea-md w-full" rows="4"
-                v-model="formListing.description"></textarea>
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="title" v-model="formListing.tags" required />
-            </label>
-        </form>
+            <form @submit.prevent="submitListing">
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
+                    <IconsEmailIcon />
+                    <input type="text" class="grow" placeholder="title" v-model="formListing.title" required />
+                </label>
+                <textarea placeholder="Description" class="textarea textarea-md w-full" rows="4"
+                    v-model="formListing.description"></textarea>
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
+                    <IconsEmailIcon />
+                    <input type="text" class="grow" placeholder="title" v-model="formListing.tags" required />
+                </label>
+            </form>
+        </div>
+    </div>
+</template> -->
+
+
+<template>
+    <div class="bg-base-300 h-full py-5">
+        <div class="max-w-[1100px] mx-auto">
+            <Suspense>
+                <template #default>
+                    <GlobalListingForm />
+                </template>
+                <template #fallback>
+                    <div class="text-center py-10">Loading Listing Form...</div>
+                </template>
+            </Suspense>
+        </div>
     </div>
 </template>
+
+<script setup>
+</script>

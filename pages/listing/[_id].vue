@@ -34,7 +34,7 @@ const listingImage = (img) => {
 
 <template>
     <div class="bg-base-300 h-full py-5">
-        <div class="px-3 max-w-[1100px]">
+        <div class="px-3 max-w-[1100px] mx-auto">
             <div
                 class="flex items-center justify-between mb-6 bg-primaryText  text-primaryBg hover:bg-primaryBg hover:text-primaryText border border-primaryText p-6 rounded-md font-medium">
                 <p>This listing is {{ singleListing?.approved == 1 ? 'Approved' : 'Disapproved' }}</p>
