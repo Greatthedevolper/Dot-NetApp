@@ -47,7 +47,7 @@ const listingStatus = (status) => {
 };
 const listingImage = (img) => {
     var computedImage = img == null ? '/images/default_listing-image.jpeg' :
-        !img.includes('.png' || '.jpeg' || '.webp' || '.svg') ? '/images/default_listing-image.jpeg' : img;
+        !img.includes('.png' || '.jpeg' || '.webp' || '.svg' ||'.jpg') ? '/images/default_listing-image.jpeg' : 'http://localhost:5067/'+img;
     return computedImage;
 };
 </script>
@@ -82,7 +82,7 @@ const listingImage = (img) => {
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <div class="mask mask-squircle h-12 w-12">
-                                        <img :src="listingImage(item.image)" alt="Avatar Tailwind CSS Component" />
+                                        <img :src="item.image" alt="Avatar Tailwind CSS Component" />
 
                                     </div>
 

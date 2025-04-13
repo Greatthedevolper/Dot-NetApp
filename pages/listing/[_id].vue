@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute,useRouter } from "vue-router";
+import { toast } from 'vue3-toastify';
 const listing = useListingStore();
 const route = useRoute();
+const router = useRouter();
 const singleListing = ref(null);
 const singleUser = ref(null);
 
@@ -21,15 +23,37 @@ const getSingleListingOnPageLoad = async () => {
 };
 
 onMounted(getSingleListingOnPageLoad);
-const listingImage = (img) => {
-    if (!img) return "/images/default_listing-image.jpeg";
 
-    const validExtensions = [".png", ".jpeg", ".webp", ".svg"];
-    const hasValidExtension = validExtensions.some(ext => img.includes(ext));
-
-    return hasValidExtension ? img : "/images/default_listing-image.jpeg";
-};
-
+const listingApproval = async (id, approved) => {
+    try {
+        let data = {
+            id: id,
+            approved: approved == 1 ? 0 : 1
+        }
+        const response = await listing.listingApproved(data)
+        if (response.data.status) {
+            toast.success(response?.data?.message);
+            getSingleListingOnPageLoad();
+        } else {
+            toast.error(response?.data?.message);
+        }
+    } catch (error) {
+        console.error("Error fetching listing:", error);
+    }
+}
+const deleteListing = async (id) => {
+    try {
+        const response = await listing.listingDelete(id)
+        if (response.data.status) {
+            toast.success(response?.data?.message);
+            router.push('/user/dashboard')
+        } else {
+            toast.error(response?.data?.message);
+        }
+    } catch (error) {
+        console.error("Error fetching listing:", error);
+    }
+}
 </script>
 
 <template>
@@ -38,13 +62,14 @@ const listingImage = (img) => {
             <div
                 class="flex items-center justify-between mb-6 bg-primaryText  text-primaryBg hover:bg-primaryBg hover:text-primaryText border border-primaryText p-6 rounded-md font-medium">
                 <p>This listing is {{ singleListing?.approved == 1 ? 'Approved' : 'Disapproved' }}</p>
-                <button type="button" wire:click="approvedListing" class="btn btn-primary">
+                <button type="button" @click="listingApproval(singleListing?.id, singleListing?.approved)"
+                    class="btn btn-primary">
                     {{ singleListing?.approved == 1 ? 'Disapprove it' : 'Approve it' }}
                 </button>
             </div>
             <div class="flex gap-4 md:flex-row flex-col">
                 <div class="md:w-1/4 md:h-auto w-full h-[150px] shrink-0">
-                    <img :src="listingImage(singleListing?.image)" alt="listing image" loading="lazy"
+                    <img :src="singleListing?.image" alt="listing image" loading="lazy"
                         class="w-full h-full object-cover rounded">
                 </div>
                 <div class="grow">
@@ -56,7 +81,7 @@ const listingImage = (img) => {
                             <div class="flex items-center gap-2">
                                 <a :href="`/listing/create?id=${singleListing?.id}`" class="btn btn-primary ">
                                     Edit</a>
-                                <button class="btn btn-danger">
+                                <button class="btn btn-danger" @click="deleteListing(singleListing?.id)">
                                     <span class="capitalize text-[12px] leading-[12px]">Delete</span>
                                 </button>
                             </div>

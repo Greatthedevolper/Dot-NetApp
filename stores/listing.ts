@@ -19,7 +19,7 @@ export const useListingStore = defineStore(
 
     async function fetchUserListings(params: any) {
       try {
-        const token = useCookie('accessToken');
+        const token = useCookie("accessToken");
         const response = await $axios.get($url.USER_DASHBOARD, {
           params,
           headers: {
@@ -58,11 +58,30 @@ export const useListingStore = defineStore(
       }
     }
 
+    async function listingApproved(data:Object) {
+      try {
+        const response = await $axios.put(`${$url.APPROVAL_LISTING}?Id=${data.id}&Approved=${data.approved}`);
+        return response;
+      } catch (error) {
+        console.error("Error saving listing:", error);
+      }
+    }
+    async function listingDelete( id: BigInteger ) {
+      try {
+        const response = await $axios.delete(`${$url.DELETE_LISTING}/${id}`);
+        return response;
+      } catch (error) {
+        console.error("Error saving listing:", error);
+      }
+    }
+
     return {
       fetchListings,
       fetchUserListings,
       fetchSingleListing,
       saveListing,
+      listingApproved,
+      listingDelete
     };
   },
   {

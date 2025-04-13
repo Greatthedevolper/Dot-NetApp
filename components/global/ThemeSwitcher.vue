@@ -16,7 +16,7 @@ onMounted(() => {
 
 watch(() => globalStore.theme, (newTheme) => {
     globalStore.setTheme(newTheme);
-});;
+});
 </script>
 
 <template>

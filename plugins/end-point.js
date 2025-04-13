@@ -16,6 +16,8 @@ const url = {
   USER_DASHBOARD: "/api/users/dashboard",
 
   GET_SINGLE_LISTING: "/api/listing", //give id in function
+  APPROVAL_LISTING: "/api/listing/approval", //give id and approved in function
+  DELETE_LISTING: "/api/listing", //give id in function
 };
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.provide("url", url);

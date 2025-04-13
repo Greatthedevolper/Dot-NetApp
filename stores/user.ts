@@ -12,6 +12,7 @@ export const useUserStore = defineStore(
     const authenticated = ref(false);
     const user = ref(null);
     const router = useRouter();
+    const logoutModalShow=ref(false)
 
     interface Hotel {
       name: string;

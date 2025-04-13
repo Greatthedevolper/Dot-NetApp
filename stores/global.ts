@@ -5,6 +5,7 @@ export const useGlobalStore = defineStore(
   "global",
   () => {
     const theme = ref("dark");
+    const sidebarClosed=ref(false);
 
     function setTheme(newTheme: string) {
       theme.value = newTheme;
@@ -13,10 +14,15 @@ export const useGlobalStore = defineStore(
       }
       document.documentElement.setAttribute("data-theme", newTheme);
     }
+    function toggleSidebar() {
+      sidebarClosed.value = !sidebarClosed.value;
+    }
 
     return {
       theme,
       setTheme,
+      sidebarClosed,
+      toggleSidebar
     };
   },
   {

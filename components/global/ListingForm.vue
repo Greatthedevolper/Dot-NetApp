@@ -112,11 +112,15 @@ const submitListing = () => {
                 <IconsEmailIcon />
                 <input type="text" class="grow" placeholder="link" v-model="formListing.link" required />
             </label>
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="file" class="grow" placeholder="link" @change="assignImage" />
-            </label>
-            <img :src="formListing.image" class="w-full h-auto object-cover rounded mb-4" v-if="formListing.image" />
+            <div class="flex items-center justify-between gap-4">
+
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3 grow">
+                    <IconsEmailIcon />
+                    <input type="file" class="grow" placeholder="link" @change="assignImage" />
+                </label>
+                <img :src="formListing.image" class="w-24 h-24 object-cover rounded mb-4"
+                    v-if="formListing.image" />
+            </div>
 
             <button type="submit" class="btn btn-primary">
                 {{ isEdit ? 'Update Listing' : 'Create Listing' }}

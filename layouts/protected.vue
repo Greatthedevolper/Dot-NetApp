@@ -1,5 +1,5 @@
 <template>
-  <div class="auth h-[calc(100vh-57px)]">
+  <div class="auth h-[calc(100vh-1px)]">
     <slot />
   </div>
 </template>
