@@ -17,13 +17,13 @@ const showLogoutModal = () => {
         <NuxtLink to="/user/profile">
             <div :class="active?'w-8 h-8 -mt-4':'w-16 h-16 -mt-8'"
                 class=" mb-2 flex items-center justify-center shrink-0 bg-base-200 rounded-full border border-base-300 mx-auto ">
-                <img :src="user.user.profilePicture" alt="profile pic"
+                <img :src="user?.user?.profilePicture" alt="profile pic"
                     class="w-full h-full object-cover rounded-full" />
             </div>
             <template v-if="!active">
                 <div class="text-center mb-3">
-                    <strong>{{ user.user.name }}</strong>
-                    <p>{{ user.user.email }}</p>
+                    <strong>{{ user?.user?.name }}</strong>
+                    <p>{{ user?.user?.email }}</p>
                 </div>
             </template>
         </NuxtLink>
