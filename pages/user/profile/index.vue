@@ -75,7 +75,7 @@ const ProfileUpdatePicture = async (event) => {
 
 <template>
     <div class="bg-base-300 h-full">
-        <div class="container mx-auto pt-4">
+        <div class="container mx-auto pt-4 px-4">
             <div class="flex items-center gap-4">
                 <div class="flex-1 custom-active rounded-lg bg-base-200 p-4 relative">
                     <div class="flex items-center gap-2 mb-4">

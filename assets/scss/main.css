@@ -7,24 +7,41 @@ body {
 }
 
 .modal {
-    pointer-events: all;
-    position: fixed;
-    inset: 0px;
-    margin: 0px;
-    display: grid;
-    height: 100%;
-    max-height: none;
-    width: 100%;
-    max-width: none;
-    justify-items: center;
-    padding: 0px;
-    opacity: 1;
-    overscroll-behavior: contain;
-    z-index: 999;
-    background-color: transparent;
-    color: inherit;
-    transition-duration: 200ms;
-    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    transition-property: transform, opacity, visibility;
-    overflow-y: hidden;
+  pointer-events: all;
+  position: fixed;
+  inset: 0px;
+  margin: 0px;
+  display: grid;
+  height: 100%;
+  max-height: none;
+  width: 100%;
+  max-width: none;
+  justify-items: center;
+  padding: 0px;
+  opacity: 1;
+  overscroll-behavior: contain;
+  z-index: 999;
+  background-color: transparent;
+  color: inherit;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition-property: transform, opacity, visibility;
+  overflow-y: hidden;
+}
+
+.sidebar-menu {
+  .sidebar-menu-item {
+    @apply flex items-center gap-2 capitalize py-2 rounded-xl px-4 mb-1 w-full relative;
+    &.small-item {
+      @apply justify-center;
+    }
+    &:hover,
+    &.router-link-active.router-link-exact-active{
+      @apply text-primary;
+      &::after{
+        content: '';
+        @apply absolute bg-primary w-1 h-full left-0 transition delay-150 duration-300 ease-in-out rounded-r-lg;
+      }
+    }
+  }
 }

@@ -13,9 +13,9 @@ const showLogoutModal = () => {
 </script>
 
 <template>
-    <div class="rounded-lg p-2 relative flex items-center justify-center flex-col custom-active">
+    <div class="rounded-lg p-2 relative flex items-center justify-center flex-col " :class="{ 'custom-active': !active }">
         <NuxtLink to="/user/profile">
-            <div :class="active?'w-8 h-8 -mt-4':'w-16 h-16 -mt-8'"
+            <div :class="active ? 'w-8 h-8 -mt-4' : 'w-16 h-16 -mt-8'"
                 class=" mb-2 flex items-center justify-center shrink-0 bg-base-200 rounded-full border border-base-300 mx-auto ">
                 <img :src="user?.user?.profilePicture" alt="profile pic"
                     class="w-full h-full object-cover rounded-full" />
@@ -30,7 +30,7 @@ const showLogoutModal = () => {
         <button @click="showLogoutModal"
             class="flex items-center justify-center gap-2 rounded-lg px-2 border border-base-300 bg-base-100 py-2 w-full">
             <span v-if="!active">Logout</span>
-            <IconsLogoutIcon />
+            <IconsLogoutIcon  />
         </button>
     </div>
 </template>

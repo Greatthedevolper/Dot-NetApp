@@ -33,11 +33,10 @@ const allRoutes = ref([
       </span>
     </div>
     <div class="h-[calc(100%-256px)] overflow-y-auto">
-      <div class="px-2">
+      <div class="sidebar-menu">
         <template v-for="(link, index) in allRoutes" :key="index">
-          <NuxtLink :to="link.path" class="flex items-center gap-2 capitalize py-2 rounded-lg px-2 mb-1 w-full"
-            :class="{ 'justify-center': isSidebarCollapsed }" :active-class="isSidebarCollapsed ? '' : 'bg-base-100'"
-            :exact-active-class="isSidebarCollapsed ? '' : 'bg-primary'">
+          <NuxtLink :to="link.path" class="sidebar-menu-item"
+            :class="{ 'small-item': isSidebarCollapsed }">
             <component :is="link.icon" :class="{ 'w-8': isSidebarCollapsed }" class="capitalize" />
             <span v-if="!isSidebarCollapsed">{{ link.name }}</span>
           </NuxtLink>
