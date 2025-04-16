@@ -15,6 +15,7 @@ const pagination = ref({
 });
 
 const fetchListings = async () => {
+    debugger
     try {
         const response = await user.fetchUserListings({
             page: pagination.value.page,

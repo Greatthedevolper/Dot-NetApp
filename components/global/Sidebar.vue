@@ -25,9 +25,9 @@ const allRoutes = ref([
     :class="isSidebarCollapsed ? 'basis-[70px]' : 'basis-[250px]'">
     <div class="flex items-center gap-2 py-4 px-2 border-b border-base-300 relative">
       <NuxtLink to="/">
-        <IconsLogo :class="{ 'w-8': isSidebarCollapsed }" />
+        <IconsLogo :class="{ 'w-8': isSidebarCollapsed }" class="fill-" />
       </NuxtLink>
-      <span class="font-bold text-xl" v-if="!isSidebarCollapsed">Best Listing app</span>
+      <span class="font-bold text-xl " v-if="!isSidebarCollapsed">Best Listing app</span>
       <span role="button" class="toggle-button" @click="globalStore.toggleSidebar">
         <IconsSidebarToggleIcon :active="isSidebarCollapsed" />
       </span>
