@@ -5,6 +5,16 @@ import { toast } from 'vue3-toastify';
 const user = useUserStore();
 const listing = useListingStore()
 const route = useRoute()
+defineProps({
+    classes: {
+        type: String,
+        default: ''
+    },
+    isEdit: {
+        type: Boolean,
+        default: false
+    }
+})
 
 const singleListing = ref(null)
 const singleUser = ref(null)
@@ -76,6 +86,7 @@ const submitListing = () => {
         .then((response) => {
             if (response.data.status) {
                 toast.success(response?.data?.message);
+                successFunction();
             } else {
                 toast.error(response?.data?.message);
             }
@@ -84,47 +95,62 @@ const submitListing = () => {
             console.error('Error submitting listing:', error)
         })
 }
-
+const emit = defineEmits(['closeFormed', 'refresh'])
+const handleClose = () => {
+    emit('closeFormed')
+}
+const successFunction = () => {
+    emit('closeFormed')
+    emit('refresh')
+}
 
 </script>
 
 <template>
-    <div>
-        <h2 class="text-xl mb-4">
-            {{ isEdit ? 'Edit your listing' : 'Create a listing' }} {{ user?.user?.id }}
-        </h2>
-        <form @submit.prevent="submitListing">
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="Title" v-model="formListing.title" required />
-            </label>
-            <textarea placeholder="Description" class="textarea textarea-md w-full" rows="4"
-                v-model="formListing.description"></textarea>
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="Tags" v-model="formListing.tags" required />
-            </label>
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="Email" v-model="formListing.email" required />
-            </label>
-            <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
-                <IconsEmailIcon />
-                <input type="text" class="grow" placeholder="link" v-model="formListing.link" required />
-            </label>
-            <div class="flex items-center justify-between gap-4">
-
-                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3 grow">
+    <div class="h-full">
+        <form @submit.prevent="submitListing" class="h-full">
+            <div class="h-[calc(100%-52px)] overflow-y-auto px-4 py-2">
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
                     <IconsEmailIcon />
-                    <input type="file" class="grow" placeholder="link" @change="assignImage" />
+                    <input type="text" class="grow" placeholder="Title" v-model="formListing.title" required />
                 </label>
-                <img :src="formListing.image" class="w-24 h-24 object-cover rounded mb-4"
-                    v-if="formListing.image" />
-            </div>
+                <textarea placeholder="Description" class="textarea w-full input-bordered mb-2" rows="4"
+                    v-model="formListing.description"></textarea>
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
+                    <IconsEmailIcon />
+                    <input type="text" class="grow" placeholder="Tags" v-model="formListing.tags" required />
+                </label>
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
+                    <IconsEmailIcon />
+                    <input type="text" class="grow" placeholder="Email" v-model="formListing.email" required />
+                </label>
+                <label class="input bg-transparent input-bordered flex items-center gap-2 mb-3">
+                    <IconsEmailIcon />
+                    <input type="text" class="grow" placeholder="link" v-model="formListing.link" required />
+                </label>
+                <div class="flex items-center justify-between gap-4">
 
-            <button type="submit" class="btn btn-primary">
-                {{ isEdit ? 'Update Listing' : 'Create Listing' }}
-            </button>
+                    <label
+                        class="input bg-transparent input-bordered flex items-center justify-center gap-2 mb-3 grow h-[100px]  cursor-pointer">
+                        <div class="flex items-center justify-center w-full   grow flex-col">
+                            <IconsEmailIcon />
+                            <span>Upload an photo</span>
+                            <input type="file" class="grow invisible w-0 h-0" placeholder="link"
+                                @change="assignImage" />
+                        </div>
+                    </label>
+                    <img :src="formListing.image" class="w-24 h-24 object-cover rounded mb-4"
+                        v-if="formListing.image" />
+                </div>
+            </div>
+            <div class="px-4 flex items-center gap-3">
+                <button type="submit" class="btn btn-primary">
+                    {{ isEdit ? 'Update Listing' : 'Create Listing' }}
+                </button>
+                <button type="reset" class="btn btn-primary" @click="handleClose">
+                    Cancel
+                </button>
+            </div>
         </form>
     </div>
 </template>

@@ -124,8 +124,13 @@ const showListingModal = () => {
             <GlobalPagination :pagination="pagination" :nextPage="nextPage" :prevPage="prevPage"
                 :fetchListings="fetchListings" />
         </template>
+
         <Transition name="slide-fade">
-            <GlobalDrawerModal v-if="openListingModal" classes="w-[450px]" @close="openListingModal = false" title="Create new listing">
+            <GlobalDrawerLayer :isClosed="openListingModal" @close="openListingModal = false" />
+        </Transition>
+        <Transition name="slide-fade">
+            <GlobalDrawerModal v-if="openListingModal" classes="w-[450px]" @close="openListingModal = false"
+                @refresh="fetchListings" title="Create new listing">
             </GlobalDrawerModal>
         </Transition>
     </div>
