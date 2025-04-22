@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute,useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { toast } from 'vue3-toastify';
 const listing = useListingStore();
 const route = useRoute();
 const router = useRouter();
 const singleListing = ref(null);
 const singleUser = ref(null);
+const openListingModal = ref(false);
 
 const getSingleListingOnPageLoad = async () => {
     try {
@@ -54,6 +55,9 @@ const deleteListing = async (id) => {
         console.error("Error fetching listing:", error);
     }
 }
+const showListingModal = () => {
+    openListingModal.value = !openListingModal.value
+}
 </script>
 
 <template>
@@ -79,8 +83,9 @@ const deleteListing = async (id) => {
                         <div class="flex items-center justify-between mb-6 border-b border-slate-200 pb-2">
                             <p class="capitalize"> Listing details </p>
                             <div class="flex items-center gap-2">
-                                <a :href="`/listing/create?id=${singleListing?.id}`" class="btn btn-primary ">
-                                    Edit</a>
+                                <button @click="showListingModal" class="btn btn-primary ">
+                                    Edit
+                                </button>
                                 <button class="btn btn-danger" @click="deleteListing(singleListing?.id)">
                                     <span class="capitalize text-[12px] leading-[12px]">Delete</span>
                                 </button>
@@ -127,6 +132,14 @@ const deleteListing = async (id) => {
                 </div>
             </div>
         </div>
+        <Transition name="slide-fade">
+            <GlobalDrawerLayer :isClosed="openListingModal" @close="openListingModal = false" />
+        </Transition>
+        <Transition name="slide-fade">
+            <GlobalDrawerModal v-if="openListingModal" classes="w-[450px]" @close="openListingModal = false"
+                :id="singleListing?.id" title="Edit listing" :isEdit="true" @refresh="getSingleListingOnPageLoad">
+            </GlobalDrawerModal>
+        </Transition>
     </div>
 
 </template>

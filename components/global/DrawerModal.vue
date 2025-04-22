@@ -11,7 +11,16 @@ defineProps({
     isEdit: {
         type: Boolean,
         default: true
-    }
+    },
+
+    data: {
+        type: Object,
+        default: () => ({})
+    },
+    id: {
+        type: Number,
+        default: null
+    },
 
 })
 </script>
@@ -25,7 +34,7 @@ defineProps({
             </div>
         </div>
         <div class="h-[calc(100vh-54px)]">
-            <GlobalListingForm :isEdit="isEdit" @closeFormed="$emit('close')" @refresh="$emit('refresh')" />
+            <GlobalListingForm :isEdit="isEdit" @closeFormed="$emit('close')" @refresh="$emit('refresh')" :listingId="id"/>
         </div>
     </div>
 </template>

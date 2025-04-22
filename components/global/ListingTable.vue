@@ -82,7 +82,7 @@ const listingImage = (img) => {
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <div class="mask mask-squircle h-12 w-12">
-                                        <img :src="item.image" alt="Avatar Tailwind CSS Component" />
+                                        <img :src="item.image" alt="image" loading="lazy" />
 
                                     </div>
 

@@ -1,11 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { toast } from 'vue3-toastify';
 const user = useUserStore();
 const listing = useListingStore()
-const route = useRoute()
-defineProps({
+const props = defineProps({
     classes: {
         type: String,
         default: ''
@@ -13,7 +11,11 @@ defineProps({
     isEdit: {
         type: Boolean,
         default: false
-    }
+    },
+    listingId: {
+        type: Number,
+        default: null
+    },
 })
 
 const singleListing = ref(null)
@@ -31,18 +33,13 @@ const formListing = ref({
     approved: 1
 })
 
-// Async logic runs before rendering due to <Suspense>
-await (async () => {
-    if (!route.query.id) {
-        isEdit.value = false
-        return
-    }
-    const response = await listing.fetchSingleListing({ id: route.query.id })
+
+const fetchSingleListing = async (id) => {
+    const response = await listing.fetchSingleListing({ id })
     if (response?.data?.status) {
         isEdit.value = true
         singleListing.value = response.data.data.listing
         singleUser.value = response.data.data.user
-        // userId.value= response.data?.data?.user?.id
         formListing.value = {
             title: singleListing.value.title || '',
             description: singleListing.value.desc || '',
@@ -53,19 +50,25 @@ await (async () => {
             approved: singleListing.value.approved,
         }
     }
-})()
+}
+
+onMounted(() => {
+    if (props.listingId) {
+        fetchSingleListing(props.listingId)
+    }
+});
 const assignImage = (event) => {
     const file = event.target.files[0]
     if (file) {
-        imageFile.value = file // ✅ save actual file
-        formListing.value.image = URL.createObjectURL(file) // ✅ for preview
+        imageFile.value = file
+        formListing.value.image = URL.createObjectURL(file)
     }
 }
 
 const submitListing = () => {
     const formData = new FormData()
     formData.append('userId', userId.value || singleUser.value.id)
-    formData.append('Id', route.query.id || 0)
+    formData.append('Id', props.listingId || 0)
     formData.append('title', formListing.value.title)
     formData.append('Desc', formListing.value.description)
     formData.append('tags', formListing.value.tags)
@@ -73,13 +76,17 @@ const submitListing = () => {
     formData.append('link', formListing.value.link)
     formData.append('approved', formListing.value.approved)
 
-    if (imageFile.value) {
-        formData.append('imageFile', imageFile.value) // ✅ real file, not blob URL
-    }
+    let relativeImagePath = ''
 
-    // ✅ Debug properly
-    for (const pair of formData.entries()) {
-        console.log(pair[0] + ':', pair[1])
+    if (imageFile.value) {
+        formData.append('imageFile', imageFile.value)
+    } else if (isEdit.value && singleListing.value.image && !imageFile.value) {
+        const url = new URL(formListing.value.image)
+        relativeImagePath = url.pathname
+        if (relativeImagePath.startsWith('/')) {
+            relativeImagePath = relativeImagePath.substring(1)
+        }
+        formData.append('existingImage', relativeImagePath)
     }
 
     listing.saveListing(formData)
