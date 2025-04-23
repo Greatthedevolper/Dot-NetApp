@@ -25,7 +25,7 @@ defineProps({
 })
 </script>
 <template>
-    <div class="h-screen fixed right-0 top-0 bottom-0 z-50 bg-base-100 border border-base-300" :class="classes">
+    <div class="h-screen fixed right-0 top-0 bottom-0 z-20 bg-base-100 border border-base-300" :class="classes">
         <div class="flex items-center justify-between  px-3 border-b border-base-300 py-3">
             <div class="grow flex items-center justify-between ">
                 <h3 class="text-xl">{{ title }}</h3>
