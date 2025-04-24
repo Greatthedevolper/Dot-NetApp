@@ -45,10 +45,10 @@ export const useCategoryStore = defineStore(
 
     // //create or edit a listing
 
-    async function saveCategory(name: string) {
+    async function saveCategory(name: string, description: string) {
       try {
         const response = await $axios.post(
-          $url.AllCategories + "?name=" + name
+          $url.AllCategories + "?name=" + name + "&description=" + description
         );
         return response;
       } catch (error) {

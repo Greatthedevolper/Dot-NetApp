@@ -16,7 +16,7 @@ const closeLogoutModal = () => {
 };
 </script>
 <template>
-  <div class="default h-[calc(100vh-1px)] overflow-hidden">
+  <div class="default h-[calc(100vh-2px)] overflow-hidden">
     <div class="flex items-center h-full">
       <GlobalSidebar></GlobalSidebar>
       <div class="grow">

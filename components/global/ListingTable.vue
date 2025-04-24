@@ -47,83 +47,112 @@ const listingStatus = (status) => {
 };
 const listingImage = (img) => {
     var computedImage = img == null ? '/images/default_listing-image.jpeg' :
-        !img.includes('.png' || '.jpeg' || '.webp' || '.svg' ||'.jpg') ? '/images/default_listing-image.jpeg' : 'http://localhost:5067/'+img;
+        !img.includes('.png' || '.jpeg' || '.webp' || '.svg' || '.jpg') ? '/images/default_listing-image.jpeg' : 'http://localhost:5067/' + img;
     return computedImage;
 };
+
+
+const columns = [
+
+    {
+        name: 'title',
+        label: 'Title',
+        field: 'title',
+        sortable: true,
+        align: 'left',
+        width: '100',
+    },
+    {
+        name: 'desc',
+        label: 'Description',
+        field: 'desc',
+        sortable: true,
+        align: 'left',
+        width: '350',
+    },
+    {
+        name: 'tags',
+        label: 'Tags',
+        field: 'tags',
+        sortable: true,
+        align: 'left',
+        width: '100',
+    },
+    {
+        name: 'approved',
+        label: 'Status',
+        field: 'approved',
+        sortable: true,
+        align: 'left',
+        width: '100',
+    },
+    {
+        name: 'action',
+        label: 'Action',
+        field: 'action',
+        sortable: false,
+        align: 'center',
+        width: '100',
+    }
+]
 </script>
 
 <template>
-    <div class="relative">
-        <table class="table relative">
-            <thead class="sticky top-0 z-10">
-                <tr>
-                    <th class="rounded-l-lg bg-base-200">
-                        <label>
-                            <input type="checkbox" class="checkbox" :checked="isAllSelected"
-                                :indeterminate="isIndeterminate" @change="selectAll" />
-                        </label>
-                    </th>
-                    <th class="bg-base-200">Title</th>
-                    <th class="bg-base-200">Description</th>
-                    <th class="bg-base-200">Status</th>
-                    <th class="bg-base-200 rounded-r-lg">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <template v-for="item in listings" :key="item.id">
-                    <tr class="hover:bg-base-200 border-primary">
-                        <th>
-                            <label>
-                                <input type="checkbox" class="checkbox" :value="item.id" v-model="selectedItems"
-                                    @change="(event) => singleSelect(event, item.id)" />
-                            </label>
-                        </th>
-                        <td>
-                            <div class="flex items-center gap-3">
-                                <div class="avatar">
-                                    <div class="mask mask-squircle h-12 w-12">
-                                        <img :src="item.image" alt="image" loading="lazy" />
+    <div class="relative overflow-auto max-w-[calc(100vw - 2rem)] mx-auto bg-base-300 h-full">
+        <GlobalTable :data="listings" :columns="columns">
+            <template #title="{ item, index }">
+                <td class="max-w-[200px]">
+                    <div class="flex items-center gap-2">
+                        <div class="avatar">
+                            <div class="mask mask-squircle h-12 w-12">
+                                <img :src="item.image" alt="image" loading="lazy" />
 
-                                    </div>
+                            </div>
 
-                                </div>
+                        </div>
+                        <p class="truncate">{{ item.title }}</p>
+                    </div>
+                </td>
+            </template>
+            <template #desc="{ item, index }">
 
-                                <div>
-                                    <div class="font-bold line-clamp-1">{{ item.title }}</div>
-                                    <div class="text-sm opacity-50">{{ item.email }}</div>
-                                    <div class="text-sm opacity-50">{{ item.image }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <p class="line-clamp-2 mb-1">
-                                {{ item.desc }}
-                            </p>
-                            <div v-if="item.tags" class="flex items-center gap-3">
-                                <div v-for="tag in item.tags.split(',')" :key="tag">
-                                    <button @click="selectedTag(tag)"
-                                        class="text-inherit px-3 py-px rounded-full hover:bg-transparent hover:text-primary border border-primary flex items-center gap-1 h-[30px]">
-                                        <span class="capitalize text-[14px] leading-[14px]">{{ tag }}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span role="button" :class="listingStatus(item.approved).classes"
-                                class="rounded-full px-3 py-1 inline-flex items-center justify-center">
-                                <span>{{ listingStatus(item.approved).label }}</span>
-                            </span>
-                        </td>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <NuxtLink :to="`/listing/${item.id}`" class="btn btn-ghost btn-xs">View</NuxtLink>
-                                <button class="btn btn-ghost btn-xs">Edit</button>
-                                <button class="btn btn-ghost btn-xs">Delete</button>
-                            </div>
-                        </th>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
+
+                <td class="max-w-[100px]">
+                    <p class="truncate">{{ item.desc }}</p>
+                </td>
+            </template>
+            <template #approved="{ item, index }">
+                <td class="max-w-[100px]">
+                    <span role="button" :class="listingStatus(item.approved).classes"
+                        class="rounded-full px-3 py-1 inline-flex items-center justify-center">
+                        <span>{{ listingStatus(item.approved).label }}</span>
+                    </span>
+                </td>
+            </template>
+            <template #tags="{ item, index }">
+                <td class="max-w-[100px]">
+                    <div v-if="item.tags" class="flex items-center gap-3">
+                        <div v-for="tag in item.tags.split(',')" :key="tag">
+                            <button @click="selectedTag(tag)"
+                                class="text-inherit px-3 py-px rounded-full hover:bg-transparent hover:text-primary border border-primary flex items-center gap-1 h-[30px]">
+                                <span class="capitalize text-[14px] leading-[14px]">{{ tag }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </template>
+            <template #action="{ item, index }">
+                <td class="max-w-[100px]">
+
+                    <div class="flex items-center gap-2 justify-start ">
+                        <div class="flex items-center gap-2">
+                            <NuxtLink :to="`/listing/${item.id}`" class="btn btn-ghost btn-xs">View</NuxtLink>
+                            <button class="btn btn-ghost btn-xs">Edit</button>
+                            <button class="btn btn-ghost btn-xs">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </template>
+        </GlobalTable>
     </div>
 </template>

@@ -17,6 +17,7 @@ const allRoutes = ref([
   { path: "/", name: "Home", icon: markRaw(IconsHomeIcon) },
   { path: "/user/dashboard", name: "Dashboard", icon: markRaw(IconsDashboardIcon) },
   { path: "/user/profile", name: "Profile", icon: markRaw(IconsProfileIcon) },
+  { path: "/user/category", name: "Categories", icon: markRaw(IconsProfileIcon) },
 ]);
 </script>
 
