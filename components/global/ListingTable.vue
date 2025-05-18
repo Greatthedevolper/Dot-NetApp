@@ -4,38 +4,21 @@ import { ref, computed } from "vue";
 // Props
 const props = defineProps({
     listings: Object,
-    selectedTag: Function
-});
-const selectedItems = ref([]);
-
-const selectAll = (event) => {
-    if (event.target.checked) {
-        selectedItems.value = props.listings.map(item => item.id);
-    } else {
-        selectedItems.value = [];
+    selectedTag: Function,
+    descTable: Function,
+    columns:{
+        type: Array,
+        default: () => []
+    },
+    order: {
+        type: String,
+        default: 'asc'
+    },
+    orderColumn: {
+        type: String,
+        default: 'asc'
     }
-    console.log(selectedItems.value)
-};
-
-const isAllSelected = computed(() => {
-    return props.listings.length > 0 && selectedItems.value.length === props.listings.length;
 });
-
-const isIndeterminate = computed(() => {
-    return selectedItems.value.length > 0 && selectedItems.value.length < props.listings.length;
-});
-const singleSelect = (event, id) => {
-    if (event.target.checked) {
-        if (!selectedItems.value.includes(id)) {
-            selectedItems.value.push(id);
-        }
-    } else {
-        selectedItems.value = selectedItems.value.filter(itemId => itemId !== id)
-
-    }
-    console.log(selectedItems.value);
-}
-
 const listingStatus = (status) => {
     var classes = status == 1 ? 'bg-green-100 text-green-800'
         : status == 0 ? 'bg-yellow-100 text-yellow-800'
@@ -45,61 +28,14 @@ const listingStatus = (status) => {
             : 'Rejected';
     return { classes, label };
 };
-const listingImage = (img) => {
-    var computedImage = img == null ? '/images/default_listing-image.jpeg' :
-        !img.includes('.png' || '.jpeg' || '.webp' || '.svg' || '.jpg') ? '/images/default_listing-image.jpeg' : 'http://localhost:5067/' + img;
-    return computedImage;
-};
 
 
-const columns = [
 
-    {
-        name: 'title',
-        label: 'Title',
-        field: 'title',
-        sortable: true,
-        align: 'left',
-        width: '100',
-    },
-    {
-        name: 'desc',
-        label: 'Description',
-        field: 'desc',
-        sortable: true,
-        align: 'left',
-        width: '350',
-    },
-    {
-        name: 'tags',
-        label: 'Tags',
-        field: 'tags',
-        sortable: true,
-        align: 'left',
-        width: '100',
-    },
-    {
-        name: 'approved',
-        label: 'Status',
-        field: 'approved',
-        sortable: true,
-        align: 'left',
-        width: '100',
-    },
-    {
-        name: 'action',
-        label: 'Action',
-        field: 'action',
-        sortable: false,
-        align: 'center',
-        width: '100',
-    }
-]
 </script>
 
 <template>
     <div class="relative overflow-auto max-w-[calc(100vw - 2rem)] mx-auto bg-base-300 h-full">
-        <GlobalTable :data="listings" :columns="columns">
+        <GlobalTable :data="listings" :columns="columns" :descTable="descTable" :order="order" :orderColumn="orderColumn">
             <template #title="{ item, index }">
                 <td class="max-w-[200px]">
                     <div class="flex items-center gap-2">

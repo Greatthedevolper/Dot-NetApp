@@ -3,8 +3,7 @@ import { ref, computed } from "vue";
 
 // Props
 const props = defineProps({
-    listings: Object,
-    selectedTag: Function,
+    descTable: Function,
     columns: {
         type: Array,
         default: () => []
@@ -12,6 +11,14 @@ const props = defineProps({
     data: {
         type: Object,
         default: () => { }
+    },
+    order: {
+        type: String,
+        default: 'asc'
+    },
+    orderColumn: {
+        type: String,
+        default: 'asc'
     }
 });
 const selectedItems = ref([]);
@@ -44,7 +51,6 @@ const singleSelect = (event, id) => {
     console.log(selectedItems.value);
 }
 
-
 </script>
 
 <template>
@@ -70,11 +76,17 @@ const singleSelect = (event, id) => {
                             <slot :name="'header-' + column.name">
                                 <span class="capitalize">{{ column.label }}</span>
                             </slot>
+                            {{ orderColumn }}
+                            <template v-if="column.sortable">
+                                <span @click="descTable(column, order == 'asc' ? 'desc' : 'asc')"
+                                    class="inline-block">
+                                    <IconsSolidArrow class="text-xl" :class=" order=='asc' && orderColumn==column.name?'rotate-180':''"></IconsSolidArrow>
+                                </span>
+                            </template>
                         </div>
                     </th>
                 </tr>
             </thead>
-            <!-- <pre>{{ data }}</pre> -->
             <tbody>
                 <template v-for="(item, index) in data" :key="item.id">
                     <tr class="hover:bg-base-200 border-primary">

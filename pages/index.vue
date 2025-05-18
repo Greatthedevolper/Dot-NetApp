@@ -1,11 +1,16 @@
 <script setup>
 import { ref } from "vue";
+import { useNuxtApp } from "#app";
 import { NuxtLink } from "#components";
 import { watch } from "vue";
+const nuxtApp = useNuxtApp();
+const $columns = nuxtApp.$columns.listingColumns;
 const user = useUserStore();
 const listingSearch = ref('');
 const listings = ref([]);
 const tableView = ref(false);
+const listingOrder = ref('asc');
+const listingColumn = ref('');
 const pagination = ref({
   pageSize: 10,
   page: 1,
@@ -22,6 +27,8 @@ const fetchListings = async () => {
       page: pagination.value.page,
       pageSize: pagination.value.pageSize,
       search: listingSearch.value,
+      order:listingOrder.value,
+      orderBy:'id'
     });
     if (response?.data?.statusCode === 200) {
       const { data, currentPage, totalPages, totalCount, hasNext, hasPrevious } = response.data;
@@ -69,6 +76,12 @@ const selectedTag = async (tag) => {
 const changeView = (view) => {
   tableView.value = view === 'table' ? true : false
 }
+const descTable = (val,key) => {
+    console.log(val,"---",key)
+    listingColumn.value = val.name
+    listingOrder.value = key
+    fetchListings();
+}
 </script>
 
 <template>
@@ -99,7 +112,8 @@ const changeView = (view) => {
         </template>
         <template v-else>
           <div class="px-3">
-            <GlobalListingTable :listings="listings" :selectedTag="selectedTag" />
+            <GlobalListingTable :listings="listings" :columns="$columns" :selectedTag="selectedTag"
+              :descTable="descTable" :order="listingOrder" :orderColumn="listingColumn"/>
           </div>
         </template>
       </template>

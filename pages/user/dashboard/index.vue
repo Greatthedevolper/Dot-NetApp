@@ -1,8 +1,13 @@
 <script setup>
+import { useNuxtApp } from "#app";
 import { ref } from "vue";
 import { watch } from "vue";
+const nuxtApp = useNuxtApp();
+const $columns = nuxtApp.$columns.listingColumns;
 const user = useUserStore();
 const listingSearch = ref('');
+const listingOrder = ref('asc');
+const listingColumn = ref('');
 const listings = ref([]);
 const tableView = ref(false);
 const openListingModal = ref(false);
@@ -21,6 +26,7 @@ const fetchListings = async () => {
             page: pagination.value.page,
             pageSize: pagination.value.pageSize,
             search: listingSearch.value,
+            order:listingOrder.value
         });
         if (response?.data?.statusCode === 200) {
             const { data, currentPage, totalPages, totalCount, hasNext, hasPrevious } = response.data;
@@ -71,6 +77,13 @@ const changeView = (view) => {
 const showListingModal = () => {
     openListingModal.value = !openListingModal.value
 }
+const descTable = (val,key) => {
+    console.log(val.name,"---",key)
+    listingColumn.value = val.name
+    listingOrder.value = key
+    fetchListings();
+}
+
 </script>
 
 <template>
@@ -106,7 +119,8 @@ const showListingModal = () => {
                 </template>
                 <template v-else>
                     <div class="px-3">
-                        <GlobalListingTable :listings="listings" :selectedTag="selectedTag" />
+                        <GlobalListingTable :listings="listings" :columns="$columns" :selectedTag="selectedTag"
+                            :descTable="descTable" :order="listingOrder"  :orderColumn="listingColumn"/>
                     </div>
                 </template>
             </template>
